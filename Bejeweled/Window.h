@@ -31,6 +31,13 @@ private:
     //Initialises window.
     bool init();
     
+    //Applies surface on specified destination.
+    //'x' is x-axis coordinates.
+    //'y' is y-axis coordinates.
+    //'source' is surface to be applied.
+    //'destination' is surface to be applied to.
+    void applySurface(int x, int y, SDL_Surface* source, SDL_Surface* destination);
+    
     //Grab and apply jewels.
     void applyJewels();
     

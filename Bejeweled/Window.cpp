@@ -20,12 +20,12 @@ const int CUSHION = 15;
 
 Window::Window()
 {
-    string path = "Images/Backdrop13.jpg";
+    string background_path = "Images/Backdrop13.jpg";
     
     //Load background image.
-    if(!loadImage(&m_background, path.c_str()))
+    if(!loadImage(&m_background, background_path.c_str()))
     {
-        printf("Cannot load image %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
+        printf("Cannot load image %s! SDL Error: %s\n", background_path.c_str(), SDL_GetError());
     }
     
     //Load jewels.
@@ -50,10 +50,10 @@ void Window::start()
         //Populate grid
         m_grid.populate();
         
-        //Apply the background
-        SDL_BlitSurface(m_background, NULL, m_screenSurface, NULL);
+        //Add background image
+        applySurface(0, 0, m_background, m_screenSurface);
         
-        //Apply jewels.
+        //Add jewels.
         applyJewels();
         
         //Update the surface
@@ -120,6 +120,18 @@ bool Window::init()
     return output;
 }
 
+void Window::applySurface(int x, int y, SDL_Surface *source, SDL_Surface *destination)
+{
+    //rectangle used for coordinates.
+    SDL_Rect rectangle;
+    
+    rectangle.x = x;
+    rectangle.y = y;
+    
+    //Apply surface.
+    SDL_BlitSurface(source, NULL, destination, &rectangle);
+}
+
 void Window::applyJewels()
 {
     auto jewels = m_grid.grid();
@@ -128,27 +140,22 @@ void Window::applyJewels()
     int init_x = (SCREEN_WIDTH-(m_grid.size()*JEWEL_DIMENSION)-(CUSHION*(m_grid.size()-1)))/2;
     int init_y = (SCREEN_HEIGHT-(m_grid.size()*JEWEL_DIMENSION)-(CUSHION*(m_grid.size()-1)))/2;
     
+    //Coordinates used to apply jewels
     int coord_x = init_x, coord_y = init_y;
-    
-    //Rectangle used for coordinates.
-    SDL_Rect DestR;
     
     for(int x = 0; x < m_grid.size(); ++x)
     {
         for(int y = 0; y < m_grid.size(); ++y)
         {
-            DestR.x = coord_x;
-            DestR.y = coord_y;
-            
             int index = jewels[make_pair(x,y)];
             
-            //Apply the jewel
-            SDL_BlitSurface(m_jewels.at(index), NULL, m_screenSurface, &DestR);
+            applySurface(coord_x, coord_y, m_jewels.at(index), m_screenSurface);
 
             //add cushion to coordinates.
             coord_x += JEWEL_DIMENSION + CUSHION;
         }
         
+        //update coordinates.
         coord_x = init_x;
         coord_y += JEWEL_DIMENSION + CUSHION;
     }
