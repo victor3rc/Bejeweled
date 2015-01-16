@@ -29,6 +29,12 @@ public:
     int size();
     
 private:
+    //Verifies jewel can be created in index given.
+    //'x' position of creation on x-axis
+    //'y' position of creation on y-axis.
+    //'index' indicates jewel type.
+    bool verify(int x, int y, int index);
+    
     //Grid
     std::map<std::pair<int, int>, int> m_grid;
 };

@@ -141,7 +141,7 @@ void Window::applyJewels()
             DestR.y = coord_y;
             
             int index = jewels[make_pair(x,y)];
-            printf("%i-%i... %i\n", x, y, index);
+            
             //Apply the jewel
             SDL_BlitSurface(m_jewels.at(index), NULL, m_screenSurface, &DestR);
 
