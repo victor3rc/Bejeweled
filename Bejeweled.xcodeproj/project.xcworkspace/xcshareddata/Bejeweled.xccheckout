@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>895038DC-4BC7-4D9C-9352-CFCEC5741E33</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Bejeweled</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>8D8993707921FA6723867F8CC4DF1534C0AD19EF</key>
+		<string>https://github.com/victor3rc/Bejeweled.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Bejeweled.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>8D8993707921FA6723867F8CC4DF1534C0AD19EF</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/victor3rc/Bejeweled.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>8D8993707921FA6723867F8CC4DF1534C0AD19EF</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8D8993707921FA6723867F8CC4DF1534C0AD19EF</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Bejeweled</string>
+		</dict>
+	</array>
+</dict>
+</plist>

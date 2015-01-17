@@ -14,6 +14,16 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
+#include "Jewel.h"
+
+const int GRID_SIZE = 6;
+
+//Screen dimension constants
+const int SCREEN_WIDTH = 900;
+const int SCREEN_HEIGHT = 600;
+const int JEWEL_DIMENSION = 70;
+const int CUSHION = 15;
+
 class Grid
 {
 public:
@@ -23,10 +33,10 @@ public:
     void populate();
     
     //Returns grid.
-    const std::map<std::pair<int, int>, int> grid();
+    const std::map<std::pair<int, int>, Jewel> grid();
     
     //Returns grid size.
-    int size();
+    const int size() { return GRID_SIZE; };
     
 private:
     //Verifies jewel can be created in index given.
@@ -36,7 +46,7 @@ private:
     bool verify(int x, int y, int index);
     
     //Grid
-    std::map<std::pair<int, int>, int> m_grid;
+    std::map<std::pair<int, int>, Jewel> m_grid;
 };
 
 #endif /* defined(__Bejeweled__Grid__) */

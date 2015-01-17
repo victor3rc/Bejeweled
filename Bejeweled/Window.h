@@ -27,6 +27,9 @@ public:
     //Closes window.
     void close();
     
+    int width() { return SCREEN_WIDTH; };
+    int height() { return SCREEN_HEIGHT; };
+    
 private:
     //Initialises window.
     bool init();
@@ -51,6 +54,9 @@ private:
     
     //The window.
     SDL_Window* m_window;
+    
+    //The window renderer
+    SDL_Renderer* m_renderer = NULL;
     
     //The surface contained by the window
     SDL_Surface* m_screenSurface = NULL;

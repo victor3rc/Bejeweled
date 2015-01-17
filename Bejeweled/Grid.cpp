@@ -11,52 +11,64 @@
 
 using namespace std;
 
-const int GRID_SIZE = 6;
-
 Grid::Grid()
 {
     //seed random generator.
     srand(time(NULL));
 }
 
-const map<pair<int, int>, int> Grid::grid()
+const map<pair<int, int>, Jewel> Grid::grid()
 {
     return m_grid;
 }
 
-int Grid::size()
-{
-    return GRID_SIZE;
-}
-
 void Grid::populate()
 {
-    //Key for m_grid.
+    //Initial coordinates
+    int init_x = (SCREEN_WIDTH-(GRID_SIZE*JEWEL_DIMENSION)-(CUSHION*(GRID_SIZE-1)))/2;
+    int init_y = (SCREEN_HEIGHT-(GRID_SIZE*JEWEL_DIMENSION)-(CUSHION*(GRID_SIZE-1)))/2;
+    
+    //Coordinates used to apply jewels
+    int coord_x = init_x, coord_y = init_y;
+    
+    //Key for inserting into m_grid map.
     pair<int, int> key;
-
-    //Index to choose jewels.
-    int index;
+    
+    //Value generate to identify jewel.
+    int identifier;
     
     for(int x = 0; x < GRID_SIZE; ++x)
     {
         for(int y = 0; y < GRID_SIZE; ++y)
         {
-            //generate key for m_grid.
             key = make_pair(x, y);
             
-            //Random index for picking jewels.
-            index = (rand() % 5);
+            identifier = rand() % 5;
             
-            //Generate jewel until acceptable.
-            while(!verify(x, y, index))
+            //Choose random jewel until acceptable.
+            while(!verify(x, y, identifier))
             {
-                index = (rand() % 5);
+                identifier = rand() % 5;
             }
             
-            //insert into grid
-            m_grid.insert(make_pair(key, index));
+            //Create jewel.
+            Jewel jewel;
+            jewel.setPosition(coord_x, coord_y);
+            jewel.setValue(identifier);
+            
+            //Add jewel to grid.
+            m_grid.insert(make_pair(key, jewel));
+            
+            //add cushion to coordinates.
+            coord_x += JEWEL_DIMENSION + CUSHION;
         }
+        
+        //update coordinates.
+        coord_x = init_x;
+        coord_y += JEWEL_DIMENSION + CUSHION;
     }
+    
+    
 }
 
 bool Grid::verify(int x, int y, int index)
@@ -74,7 +86,7 @@ bool Grid::verify(int x, int y, int index)
         left1 = make_pair(x-1, y);
         left2 = make_pair(x-2, y);
 
-        if(m_grid[left1] == index && m_grid[left2] == index)
+        if(m_grid[left1].value() == index && m_grid[left2].value() == index)
         {
             return false;
         }
@@ -90,7 +102,7 @@ bool Grid::verify(int x, int y, int index)
         above1 = make_pair(x, y-1);
         above2 = make_pair(x, y-2);
         
-        if(m_grid[above1] == index && m_grid[above2] == index)
+        if(m_grid[above1].value() == index && m_grid[above2].value() == index)
         {
             return false;
         }

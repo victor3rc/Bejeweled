@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F217809A1A686C0A006E4109 /* Grid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F21780981A686C0A006E4109 /* Grid.cpp */; };
+		F21780BD1A6ACD65006E4109 /* Jewel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F21780BB1A6ACD65006E4109 /* Jewel.cpp */; };
 		F21877131A670F3100D02519 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F21877121A670F3100D02519 /* main.cpp */; };
 		F218771A1A6720CE00D02519 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F21877191A6720CE00D02519 /* SDL2.framework */; };
 		F218771D1A67CF3F00D02519 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F218771B1A67CF3F00D02519 /* Window.cpp */; };
@@ -29,6 +30,8 @@
 /* Begin PBXFileReference section */
 		F21780981A686C0A006E4109 /* Grid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Grid.cpp; sourceTree = "<group>"; };
 		F21780991A686C0A006E4109 /* Grid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Grid.h; sourceTree = "<group>"; };
+		F21780BB1A6ACD65006E4109 /* Jewel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Jewel.cpp; sourceTree = "<group>"; };
+		F21780BC1A6ACD65006E4109 /* Jewel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Jewel.h; sourceTree = "<group>"; };
 		F218770F1A670F3100D02519 /* Bejeweled */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Bejeweled; sourceTree = BUILT_PRODUCTS_DIR; };
 		F21877121A670F3100D02519 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		F21877191A6720CE00D02519 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
@@ -76,6 +79,8 @@
 				F218771C1A67CF3F00D02519 /* Window.h */,
 				F21780981A686C0A006E4109 /* Grid.cpp */,
 				F21780991A686C0A006E4109 /* Grid.h */,
+				F21780BB1A6ACD65006E4109 /* Jewel.cpp */,
+				F21780BC1A6ACD65006E4109 /* Jewel.h */,
 			);
 			path = Bejeweled;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F217809A1A686C0A006E4109 /* Grid.cpp in Sources */,
+				F21780BD1A6ACD65006E4109 /* Jewel.cpp in Sources */,
 				F21877131A670F3100D02519 /* main.cpp in Sources */,
 				F218771D1A67CF3F00D02519 /* Window.cpp in Sources */,
 			);

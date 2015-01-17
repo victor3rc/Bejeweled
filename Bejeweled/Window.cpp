@@ -12,12 +12,6 @@
 
 using namespace std;
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 900;
-const int SCREEN_HEIGHT = 600;
-const int JEWEL_DIMENSION = 70;
-const int CUSHION = 15;
-
 Window::Window()
 {
     string background_path = "Images/Backdrop13.jpg";
@@ -53,7 +47,7 @@ void Window::start()
         //Add background image
         applySurface(0, 0, m_background, m_screenSurface);
         
-        //Add jewels.
+        //Add jewels to screen surface.
         applyJewels();
         
         //Update the surface
@@ -71,7 +65,6 @@ void Window::start()
                 }
             }
         }
-        
     }
 }
 
@@ -102,6 +95,12 @@ bool Window::init()
     }
     else
     {
+        //Set texture filtering to linear
+        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
+        {
+            printf( "Warning: Linear texture filtering not enabled!" );
+        }
+        
         //Create window
         m_window = SDL_CreateWindow( "Bejeweled", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
         
@@ -134,30 +133,12 @@ void Window::applySurface(int x, int y, SDL_Surface *source, SDL_Surface *destin
 
 void Window::applyJewels()
 {
-    auto jewels = m_grid.grid();
+    map<pair<int, int>, Jewel> jewels = m_grid.grid();
     
-    //Initial coordinates
-    int init_x = (SCREEN_WIDTH-(m_grid.size()*JEWEL_DIMENSION)-(CUSHION*(m_grid.size()-1)))/2;
-    int init_y = (SCREEN_HEIGHT-(m_grid.size()*JEWEL_DIMENSION)-(CUSHION*(m_grid.size()-1)))/2;
-    
-    //Coordinates used to apply jewels
-    int coord_x = init_x, coord_y = init_y;
-    
-    for(int x = 0; x < m_grid.size(); ++x)
+    for(auto& jewel : jewels)
     {
-        for(int y = 0; y < m_grid.size(); ++y)
-        {
-            int index = jewels[make_pair(x,y)];
-            
-            applySurface(coord_x, coord_y, m_jewels.at(index), m_screenSurface);
-
-            //add cushion to coordinates.
-            coord_x += JEWEL_DIMENSION + CUSHION;
-        }
-        
-        //update coordinates.
-        coord_x = init_x;
-        coord_y += JEWEL_DIMENSION + CUSHION;
+        //Draw jewel in place
+        applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
     }
 }
 
