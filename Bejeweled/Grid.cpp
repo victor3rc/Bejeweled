@@ -25,8 +25,8 @@ const map<pair<int, int>, Jewel> Grid::grid()
 void Grid::populate()
 {
     //Initial coordinates
-    int init_x = (SCREEN_WIDTH-(GRID_SIZE*JEWEL_DIMENSION)-(CUSHION*(GRID_SIZE-1)))/2;
-    int init_y = (SCREEN_HEIGHT-(GRID_SIZE*JEWEL_DIMENSION)-(CUSHION*(GRID_SIZE-1)))/2;
+    int init_x = (SCREEN_WIDTH-(GRID_SIZE*JEWEL_WIDTH)-(CUSHION*(GRID_SIZE-1)))/2;
+    int init_y = (SCREEN_HEIGHT-(GRID_SIZE*JEWEL_HEIGHT)-(CUSHION*(GRID_SIZE-1)))/2;
     
     //Coordinates used to apply jewels
     int coord_x = init_x, coord_y = init_y;
@@ -34,8 +34,8 @@ void Grid::populate()
     //Key for inserting into m_grid map.
     pair<int, int> key;
     
-    //Value generate to identify jewel.
-    int identifier;
+    //Value generated to identify jewel.
+    int id;
     
     for(int x = 0; x < GRID_SIZE; ++x)
     {
@@ -43,29 +43,29 @@ void Grid::populate()
         {
             key = make_pair(x, y);
             
-            identifier = rand() % 5;
+            id = rand() % 5;
             
             //Choose random jewel until acceptable.
-            while(!verify(x, y, identifier))
+            while(!verify(x, y, id))
             {
-                identifier = rand() % 5;
+                id = rand() % 5;
             }
             
             //Create jewel.
             Jewel jewel;
             jewel.setPosition(coord_x, coord_y);
-            jewel.setValue(identifier);
+            jewel.setIdentifier(id);
             
             //Add jewel to grid.
             m_grid.insert(make_pair(key, jewel));
             
             //add cushion to coordinates.
-            coord_x += JEWEL_DIMENSION + CUSHION;
+            coord_x += JEWEL_WIDTH + CUSHION;
         }
         
         //update coordinates.
         coord_x = init_x;
-        coord_y += JEWEL_DIMENSION + CUSHION;
+        coord_y += JEWEL_HEIGHT + CUSHION;
     }
 }
 

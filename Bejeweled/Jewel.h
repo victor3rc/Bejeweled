@@ -14,6 +14,9 @@
 #include <stdio.h>
 #include <string>
 
+const int JEWEL_WIDTH = 70;
+const int JEWEL_HEIGHT = 70;
+
 //The mouse button
 class Jewel
 {
@@ -26,13 +29,13 @@ public:
     int y() { return m_position.y; };
     
     //Return jewel identifier value.
-    int value() { return m_value; };
+    int value() { return m_id; };
     
     //Sets coordinates.
     void setPosition(int x, int y);
     
     //Sets jewel identifier value.
-    void setValue(int val);
+    void setIdentifier(int val);
     
     //Handles mouse event
     void handleEvent(SDL_Event* e);
@@ -42,10 +45,7 @@ private:
     SDL_Point m_position;
     
     //Jewel identifier value.
-    int m_value;
-    
-    const int JEWEL_WIDTH = 70;
-    const int JEWEL_HEIGHT = 70;
+    int m_id;
 };
 
 #endif /* defined(__Bejeweled__Jewel__) */

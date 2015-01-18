@@ -17,9 +17,9 @@ void Jewel::setPosition( int x, int y )
     m_position.y = y;
 }
 
-void Jewel::setValue(int val)
+void Jewel::setIdentifier(int val)
 {
-    m_value = val;
+    m_id = val;
 }
 
 void Jewel::handleEvent( SDL_Event* e )
