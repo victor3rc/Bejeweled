@@ -25,8 +25,8 @@ const map<pair<int, int>, Jewel> Grid::grid()
 void Grid::populate()
 {
     //Initial coordinates
-    int init_x = 1 + (SCREEN_WIDTH-(GRID_SIZE*JEWEL_WIDTH)-(CUSHION*(GRID_SIZE-1)))/2;
-    int init_y = 1 + (SCREEN_HEIGHT-(GRID_SIZE*JEWEL_HEIGHT)-(CUSHION*(GRID_SIZE-1)))/2;
+    int init_x = (SCREEN_WIDTH-(GRID_SIZE*JEWEL_WIDTH)-(CUSHION*(GRID_SIZE-1)))/2;
+    int init_y = (SCREEN_HEIGHT-(GRID_SIZE*JEWEL_HEIGHT)-(CUSHION*(GRID_SIZE-1)))/2;
     
     //Coordinates used to apply jewels
     int coord_x = init_x, coord_y = init_y;

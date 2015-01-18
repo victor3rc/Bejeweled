@@ -14,8 +14,25 @@
 #include <stdio.h>
 #include <string>
 
+const int GRID_SIZE = 8;
+
+//Indicates pixels to be moved at a time during swap.
+const int SWAP_SPEED = 10;
+
+//Screen dimension constants
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 768;
+const int CUSHION = 10;
+
 const int JEWEL_WIDTH = 70;
 const int JEWEL_HEIGHT = 70;
+const int SWAP_SCOPE = 20; //Distance in pixels mouse has to be dragged to activate swap.
+
+//Jewel limit positions
+const int LEFT_COLUMN = (SCREEN_WIDTH-(GRID_SIZE*JEWEL_WIDTH)-(CUSHION*(GRID_SIZE-1)))/2;
+const int RIGHT_COLUMN = SCREEN_WIDTH-LEFT_COLUMN-JEWEL_WIDTH;
+const int TOP_ROW = (SCREEN_HEIGHT-(GRID_SIZE*JEWEL_HEIGHT)-(CUSHION*(GRID_SIZE-1)))/2;
+const int BOTTOM_ROW = SCREEN_HEIGHT-TOP_ROW-JEWEL_HEIGHT;
 
 //The mouse button
 class Jewel
@@ -37,12 +54,21 @@ public:
     //Sets jewel identifier value.
     void setIdentifier(int val);
     
+    //Indicates swapping has been finalised.
+    void stopDragging();
+    
     //Handles mouse event
-    bool handleEvent(SDL_Event* e);
+    int handleEvent(SDL_Event* e);
     
 private:
     //Updates mouse click location.
     void setClickLocation(int x, int y);
+    
+    //Find if swap has been activated by mouse drag.
+    //'x' coordinate of where mouse was clicked.
+    //'y' coordinate of where mouse was clicked.
+    //returns int indicating jewel to be swapped with. 1 = left, 2 = right, 3 = above and 4 = below. 0 = no swap.
+    int swap(int x, int y);
     
     //Top left position
     SDL_Point m_position;
@@ -53,7 +79,7 @@ private:
     //bool to indicated whether jewel is being clicked on.
     bool m_drag;
     
-    //Location where mouse was clicked.
+    //Coordinates where mouse was clicked.
     int m_x_click, m_y_click;
     
 };

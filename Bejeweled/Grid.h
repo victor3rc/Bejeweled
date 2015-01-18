@@ -16,13 +16,6 @@
 
 #include "Jewel.h"
 
-const int GRID_SIZE = 8;
-
-//Screen dimension constants
-const int SCREEN_WIDTH = 1024;
-const int SCREEN_HEIGHT = 768;
-const int CUSHION = 10;
-
 class Grid
 {
 public:

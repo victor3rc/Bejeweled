@@ -8,6 +8,8 @@
 
 #include "Jewel.h"
 
+using namespace std;
+
 Jewel::Jewel()
 {
     m_drag = false;
@@ -24,7 +26,12 @@ void Jewel::setIdentifier(int val)
     m_id = val;
 }
 
-bool Jewel::handleEvent( SDL_Event* e )
+void Jewel::stopDragging()
+{
+    m_drag = false;
+}
+
+int Jewel::handleEvent( SDL_Event* e )
 {
     //If mouse event happened
     if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
@@ -61,41 +68,73 @@ bool Jewel::handleEvent( SDL_Event* e )
         if(inside)
         {
             //Set mouse over sprite
-            switch( e->type )
+            switch(e->type)
             {
                 case SDL_MOUSEMOTION:
                     
                     if(m_drag)
                     {
-                        //Move with mouse
-                        setPosition(x-m_x_click, y-m_y_click);
+                        //Check for a swap, only if mouse is being dragged.
+                        return swap(x, y);
                     }
-                    
-                    return true;
-                    
-                case SDL_MOUSEBUTTONDOWN:
-                    
-                    setClickLocation(x, y);
-                    
-                    m_drag = true;
                     
                     break;
                     
-                case SDL_MOUSEBUTTONUP:
-                    m_drag = false;
+                case SDL_MOUSEBUTTONDOWN:
+                    
+                    if(e->button.button == SDL_BUTTON_LEFT)
+                    {
+                        setClickLocation(x, y);
+                        m_drag = true;
+                    }
+                    
                     break;
             }
         }
     }
     
-    return false;
+    return 0;
 }
 
 void Jewel::setClickLocation(int x, int y)
 {
-    m_x_click = x - m_position.x;
-    m_y_click = y - m_position.y;
+    m_x_click = x;
+    m_y_click = y;
 }
+
+int Jewel::swap(int x, int y)
+{
+    //Swap left
+    if(x < m_x_click - SWAP_SCOPE && m_position.x > LEFT_COLUMN)
+    {
+        return 1;
+    }
+    //Swap right.
+    else if (x > m_x_click + SWAP_SCOPE && m_position.x < RIGHT_COLUMN)
+    {
+        return 2;
+    }
+    //Swap above.
+    else if(y < m_y_click - SWAP_SCOPE && m_position.y > TOP_ROW)
+    {
+        return 3;
+    }
+    //Swap below.
+    else if(y > m_y_click + SWAP_SCOPE && m_position.y < BOTTOM_ROW)
+    {
+        return 4;
+    }
+    
+    //No swap.
+    return 0;
+}
+
+
+
+
+
+
+
 
 
 

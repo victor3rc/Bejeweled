@@ -68,13 +68,41 @@ void Window::start()
                     {
                         key = make_pair(x, y);
                         
-                        //Redraw if relevant mouse event.
-                        if(m_grid[key].handleEvent(&e))
+                        int swap_event = m_grid[key].handleEvent(&e);
+                        
+                        //Redraw if swap event relevant.
+                        if(swap_event != 0)
                         {
-                            drawGame();
+                            //Set jewel clicked on as top jewel.
+                            m_top_jewel = key;
+                            
+                            switch(swap_event)
+                            {
+                                case 1:
+                                    //Swap left.
+                                    swapAnimation(make_pair(key.first, key.second-1), key, true);
+                                    goto restart;
+                                case 2:
+                                    //Swap right.
+                                    swapAnimation(key, make_pair(key.first, key.second+1), true);
+                                    goto restart;
+                                case 3:
+                                    //Swap above.
+                                    swapAnimation(make_pair(key.first-1, key.second), key, false);
+                                    goto restart;
+                                case 4:
+                                    //Swap below
+                                    swapAnimation(key, make_pair(key.first+1, key.second), false);
+                                    goto restart;
+                                default:
+                                    continue;
+                            }
                         }
                     }
                 }
+                
+                restart:
+                continue;
             }
         }
     }
@@ -149,9 +177,15 @@ void Window::applyJewels()
     
     for(auto& jewel : jewels)
     {
-        //Draw jewel in place
-        applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
+        if(jewel.first != m_top_jewel)
+        {
+            //apply jewel in place
+            applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
+        }
     }
+    
+    //apply jewel to appear on top of all other jewels last.
+    applySurface(jewels[m_top_jewel].x(), jewels[m_top_jewel].y(), m_jewels[jewels[m_top_jewel].value()], m_screenSurface);
 }
 
 bool Window::loadImage(SDL_Surface** obj, const string& path)
@@ -201,6 +235,58 @@ void Window::drawGame()
     //Update the surface
     SDL_UpdateWindowSurface(m_window);
 }
+
+void Window::swapAnimation(pair<int, int> lower, pair<int, int> higher, bool horizontal)
+{
+    //Original coordinates of jewel doing the swapping.
+    int x_orig = m_grid[higher].x(), y_orig = m_grid[higher].y();
+    
+    //While swap has not been completed yet.
+    while(((m_grid[lower].x() != x_orig && horizontal) ||
+          ((m_grid[lower].y() != y_orig) && !horizontal )))
+    {
+        //Swap
+        if(horizontal)
+        {
+            m_grid[lower].setPosition(m_grid[lower].x() + SWAP_SPEED, y_orig);
+            m_grid[higher].setPosition(m_grid[higher].x() - SWAP_SPEED, y_orig);
+        }
+        else
+        {
+            m_grid[lower].setPosition(x_orig, m_grid[lower].y() + SWAP_SPEED);
+            m_grid[higher].setPosition(x_orig, m_grid[higher].y() - SWAP_SPEED);
+        }
+
+        //Update game.
+        drawGame();
+    }
+    
+    indicateSwap(lower, higher);
+}
+
+void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
+{
+    //Swap jewels in grid container also.
+    Jewel temp = m_grid[lower];
+    m_grid[lower] = m_grid[higher];
+    m_grid[higher] = temp;
+    
+    m_grid[lower].stopDragging();
+    m_grid[higher].stopDragging();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

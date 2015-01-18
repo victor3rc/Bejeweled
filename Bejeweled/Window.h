@@ -49,7 +49,19 @@ private:
     //Loads jewel images.
     void loadJewels();
     
+    //Draw background and jewel objects.
     void drawGame();
+    
+    //Perform swap of two jewels in direction indicated.
+    //'lower' is jewel to the left on horizontal swap or above in a vertical swap.
+    //'higher' is jewel to the right on horizontal swap or below in a vertical swap.
+    //'horizontal' indicates horizontal (true) or vertical (false) swap.
+    void swapAnimation(std::pair<int, int> lower, std::pair<int, int> higher, bool horizontal);
+    
+    //Updates grid containing jewels, swapping 'lower' jewel and 'higher' jewel.
+    //'lower' jewel to be swapped.
+    //'higher' jewel to be swapped.
+    void indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher);
     
     //The window.
     SDL_Window* m_window;
@@ -65,6 +77,9 @@ private:
     
     //Jewels grid.
     Grid m_grid;
+    
+    //Key used in jewels map to indicate jewel which should be drawn on top.
+    std::pair<int, int> m_top_jewel;
 };
 
 #endif /* defined(__Bejeweled__Window__) */
