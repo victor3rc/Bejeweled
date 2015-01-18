@@ -38,7 +38,7 @@ public:
     const int size() { return GRID_SIZE; };
     
     //Provide intuitive mothod of accessing jewels in grid.
-    Jewel operator[](const std::pair<int, int>& key);
+    Jewel& operator[](const std::pair<int, int>& key);
     
 private:
     //Verifies jewel can be created in grid position given.

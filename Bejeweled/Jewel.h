@@ -38,14 +38,24 @@ public:
     void setIdentifier(int val);
     
     //Handles mouse event
-    void handleEvent(SDL_Event* e);
+    bool handleEvent(SDL_Event* e);
     
 private:
+    //Updates mouse click location.
+    void setClickLocation(int x, int y);
+    
     //Top left position
     SDL_Point m_position;
     
     //Jewel identifier value.
     int m_id;
+    
+    //bool to indicated whether jewel is being clicked on.
+    bool m_drag;
+    
+    //Location where mouse was clicked.
+    int m_x_click, m_y_click;
+    
 };
 
 #endif /* defined(__Bejeweled__Jewel__) */

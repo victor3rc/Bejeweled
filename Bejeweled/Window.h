@@ -49,6 +49,8 @@ private:
     //Loads jewel images.
     void loadJewels();
     
+    void drawGame();
+    
     //The window.
     SDL_Window* m_window;
     
@@ -60,8 +62,6 @@ private:
     
     //The 1st jewel
     std::vector<SDL_Surface*> m_jewels;
-    
-    SDL_Surface* m_jewel = NULL;
     
     //Jewels grid.
     Grid m_grid;

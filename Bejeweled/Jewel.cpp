@@ -9,9 +9,11 @@
 #include "Jewel.h"
 
 Jewel::Jewel()
-{}
+{
+    m_drag = false;
+}
 
-void Jewel::setPosition( int x, int y )
+void Jewel::setPosition(int x, int y)
 {
     m_position.x = x;
     m_position.y = y;
@@ -22,7 +24,7 @@ void Jewel::setIdentifier(int val)
     m_id = val;
 }
 
-void Jewel::handleEvent( SDL_Event* e )
+bool Jewel::handleEvent( SDL_Event* e )
 {
     //If mouse event happened
     if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
@@ -45,7 +47,7 @@ void Jewel::handleEvent( SDL_Event* e )
             inside = false;
         }
         //Mouse above the button
-        else if( y < m_position.y )
+        if( y < m_position.y )
         {
             inside = false;
         }
@@ -62,17 +64,41 @@ void Jewel::handleEvent( SDL_Event* e )
             switch( e->type )
             {
                 case SDL_MOUSEMOTION:
-
-                    break;
+                    
+                    if(m_drag)
+                    {
+                        //Move with mouse
+                        setPosition(x-m_x_click, y-m_y_click);
+                    }
+                    
+                    return true;
                     
                 case SDL_MOUSEBUTTONDOWN:
-                    printf("pressed %i-%i\n", this->x(), this->y());
+                    
+                    setClickLocation(x, y);
+                    
+                    m_drag = true;
+                    
                     break;
                     
                 case SDL_MOUSEBUTTONUP:
-
+                    m_drag = false;
                     break;
             }
         }
     }
+    
+    return false;
 }
+
+void Jewel::setClickLocation(int x, int y)
+{
+    m_x_click = x - m_position.x;
+    m_y_click = y - m_position.y;
+}
+
+
+
+
+
+

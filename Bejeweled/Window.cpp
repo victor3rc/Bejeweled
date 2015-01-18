@@ -44,14 +44,8 @@ void Window::start()
         //Populate grid
         m_grid.populate();
         
-        //Add background image
-        applySurface(0, 0, m_background, m_screenSurface);
-        
-        //Add jewels to screen surface.
-        applyJewels();
-        
-        //Update the surface
-        SDL_UpdateWindowSurface(m_window);
+        //Draw background and jewels.
+        drawGame();
         
         while(!quit)
         {
@@ -74,7 +68,11 @@ void Window::start()
                     {
                         key = make_pair(x, y);
                         
-                        m_grid[key].handleEvent(&e);
+                        //Redraw if relevant mouse event.
+                        if(m_grid[key].handleEvent(&e))
+                        {
+                            drawGame();
+                        }
                     }
                 }
             }
@@ -190,6 +188,18 @@ void Window::loadJewels()
             printf("Cannot load image %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
         }
     }
+}
+
+void Window::drawGame()
+{
+    //Add background image
+    applySurface(0, 0, m_background, m_screenSurface);
+    
+    //Add jewels to screen surface.
+    applyJewels();
+    
+    //Update the surface
+    SDL_UpdateWindowSurface(m_window);
 }
 
 
