@@ -35,7 +35,7 @@ public:
     void setValue(int val);
     
     //Handles mouse event
-    void handleEvent( SDL_Event* e );
+    void handleEvent(SDL_Event* e);
     
 private:
     //Top left position

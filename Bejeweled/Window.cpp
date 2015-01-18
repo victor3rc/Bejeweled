@@ -55,6 +55,9 @@ void Window::start()
         
         while(!quit)
         {
+            //Key to consult jewels.
+            pair<int, int> key;
+            
             //Handle events on queue
             while( SDL_PollEvent( &e ) != 0 )
             {
@@ -62,6 +65,17 @@ void Window::start()
                 if( e.type == SDL_QUIT )
                 {
                     quit = true;
+                }
+                
+                //Handle events in jewels
+                for(int x = 0; x < m_grid.size(); ++x)
+                {
+                    for(int y = 0; y < m_grid.size(); ++y)
+                    {
+                        key = make_pair(x, y);
+                        
+                        m_grid[key].handleEvent(&e);
+                    }
                 }
             }
         }

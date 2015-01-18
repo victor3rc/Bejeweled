@@ -55,13 +55,8 @@ void Jewel::handleEvent( SDL_Event* e )
             inside = false;
         }
         
-        //Mouse is outside button
-        if( !inside )
-        {
-            
-        }
         //Mouse is inside button
-        else
+        if(inside)
         {
             //Set mouse over sprite
             switch( e->type )
@@ -71,7 +66,7 @@ void Jewel::handleEvent( SDL_Event* e )
                     break;
                     
                 case SDL_MOUSEBUTTONDOWN:
-
+                    printf("pressed %i-%i\n", this->x(), this->y());
                     break;
                     
                 case SDL_MOUSEBUTTONUP:

@@ -67,11 +67,14 @@ void Grid::populate()
         coord_x = init_x;
         coord_y += JEWEL_DIMENSION + CUSHION;
     }
-    
-    
 }
 
-bool Grid::verify(int x, int y, int index)
+Jewel Grid::operator[](const pair<int, int>& key)
+{
+    return m_grid[key];
+}
+
+bool Grid::verify(int x, int y, int id)
 {
     //return flag.
     bool output = true;
@@ -86,7 +89,7 @@ bool Grid::verify(int x, int y, int index)
         left1 = make_pair(x-1, y);
         left2 = make_pair(x-2, y);
 
-        if(m_grid[left1].value() == index && m_grid[left2].value() == index)
+        if(m_grid[left1].value() == id && m_grid[left2].value() == id)
         {
             return false;
         }
@@ -102,7 +105,7 @@ bool Grid::verify(int x, int y, int index)
         above1 = make_pair(x, y-1);
         above2 = make_pair(x, y-2);
         
-        if(m_grid[above1].value() == index && m_grid[above2].value() == index)
+        if(m_grid[above1].value() == id && m_grid[above2].value() == id)
         {
             return false;
         }

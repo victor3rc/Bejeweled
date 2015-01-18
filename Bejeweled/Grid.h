@@ -38,11 +38,14 @@ public:
     //Returns grid size.
     const int size() { return GRID_SIZE; };
     
+    //Provide intuitive mothod of accessing jewels in grid.
+    Jewel operator[](const std::pair<int, int>& key);
+    
 private:
-    //Verifies jewel can be created in index given.
-    //'x' position of creation on x-axis
-    //'y' position of creation on y-axis.
-    //'index' indicates jewel type.
+    //Verifies jewel can be created in grid position given.
+    //'x' location on x-axis
+    //'y' location on y-axis.
+    //'id' indicates jewel type.
     bool verify(int x, int y, int index);
     
     //Grid
