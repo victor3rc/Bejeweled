@@ -45,20 +45,27 @@ public:
     int x() { return m_position.x; };
     int y() { return m_position.y; };
     
+    //Return target coordinates
+    int xTarget() { return m_target.x; };
+    int yTarget() { return m_target.y; };
+    
     //Return jewel identifier value.
     int value() { return m_id; };
     
-    //Return bool to indicate if jewel can be rendered.
-    bool render() { return m_render; };
+    //Returns bool indicating if jewel is to be dropped.
+    bool drop() { return m_drop; };
     
     //Sets coordinates.
     void setPosition(int x, int y);
     
+    //Set target position to drop to.
+    void setDropTarget(int x, int y);
+    
     //Sets jewel identifier value.
     void setIdentifier(int val);
     
-    //Used to indicate if jewel is to be rendered or not.
-    void setDraw(bool render);
+    //Indicates if jewel is being dropped or not.
+    void setDrop(bool drop);
     
     //Indicates swapping has been finalised.
     void stopDragging();
@@ -76,17 +83,18 @@ private:
     //returns int indicating jewel to be swapped with. 1 = left, 2 = right, 3 = above and 4 = below. 0 = no swap.
     int swap(int x, int y);
     
-    //Top left position
-    SDL_Point m_position;
+    //Top left position (m_position) and drop target (m_target)
+    SDL_Point m_position, m_target;
     
-    //Jewel identifier value.
+    //Jewel identifier value. Indicates jewel color
+    //1 - Black, 2 - Gray, 3 - pink, 4 - Blue, 5 - orange, 0 - no jewel
     int m_id;
     
     //bool to indicated whether jewel is being clicked on.
     bool m_drag;
     
-    //bool to indicate if jewel is to be rendered.
-    bool m_render;
+    //bool to indicate if jewel is to be dropped.
+    bool m_drop;
     
     //Coordinates where mouse was clicked.
     int m_x_click, m_y_click;

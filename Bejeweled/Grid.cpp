@@ -129,8 +129,6 @@ bool Grid::findCombinations(const pair<int, int>& swapped)
     {
         return false;
     }
-    
-    //printf("Jewel %i-%i: L=%i, R=%i, A=%i, B=%i\n", swapped.first, swapped.second, left, right, above, below);
 }
 
 Jewel& Grid::operator[](const pair<int, int>& key)
@@ -183,7 +181,7 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
     //Key to jewel to erase.
     pair<int,int> adjacent;
     
-    m_grid[key].setDraw(false);
+    m_grid[key].setIdentifier(-1);
     
     //Erase number of jewels indicated.
     for(int i = 1; i < lower+1; ++i)
@@ -198,7 +196,7 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
         }
         
         //Erase jewel.
-        m_grid[adjacent].setDraw(false);
+        m_grid[adjacent].setIdentifier(-1);
     }
     
     //Erase number of jewels indicated.
@@ -213,7 +211,8 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
             adjacent = make_pair(key.first+i, key.second);
         }
         
-        m_grid[adjacent].setDraw(false);
+        //Erase jewel
+        m_grid[adjacent].setIdentifier(-1);
     }
 }
 

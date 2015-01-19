@@ -16,7 +16,7 @@ Jewel::Jewel()
     m_drag = false;
     
     //To be rendered at creation.
-    m_render = true;
+    m_drop = false;
 }
 
 void Jewel::setPosition(int x, int y)
@@ -25,14 +25,20 @@ void Jewel::setPosition(int x, int y)
     m_position.y = y;
 }
 
+void Jewel::setDropTarget(int x, int y)
+{
+    m_target.x = x;
+    m_target.y = y;
+}
+
 void Jewel::setIdentifier(int val)
 {
     m_id = val;
 }
 
-void Jewel::setDraw(bool render)
+void Jewel::setDrop(bool drop)
 {
-    m_render = render;
+    m_drop = drop;
 }
 
 void Jewel::stopDragging()
