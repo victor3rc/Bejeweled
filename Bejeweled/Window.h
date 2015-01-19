@@ -58,7 +58,7 @@ private:
     //'horizontal' indicates horizontal (true) or vertical (false) swap.
     void swapAnimation(std::pair<int, int> lower, std::pair<int, int> higher, bool horizontal);
     
-    //Updates grid containing jewels, swapping 'lower' jewel and 'higher' jewel.
+    //Updates grid containing jewels, swapping two jewels indicated.
     //'lower' jewel to be swapped.
     //'higher' jewel to be swapped.
     void indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher);

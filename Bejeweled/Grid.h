@@ -25,7 +25,11 @@ public:
     void populate();
     
     //Returns grid.
-    const std::map<std::pair<int, int>, Jewel> grid();
+    const std::map<std::pair<int, int>, Jewel>& grid();
+    
+    //Check if jewels around jewel indicated give a combination.
+    //'key' indicates jewel.
+    bool findCombinations(const std::pair<int, int>& key);
     
     //Returns grid size.
     const int size() { return GRID_SIZE; };
@@ -39,6 +43,13 @@ private:
     //'y' location on y-axis.
     //'id' indicates jewel type.
     bool verify(int x, int y, int index);
+    
+    //Combines jewels in lower and higher indexes to the one given.
+    //'key' is key of jewel to be combined in grid.
+    //'lower' is the number of jewels lower in the relevant index that are to be combined.
+    //'higher' is the number of jewels higher in the relevant index that are to be combined.
+    //'x_axis' indicates if jewels to combine are in x-axis (true) or y-axis (false).
+    void combine(const std::pair<int,int>& key, int lower, int higher, bool x_axis);
     
     //Grid
     std::map<std::pair<int, int>, Jewel> m_grid;

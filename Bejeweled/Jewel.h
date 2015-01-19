@@ -17,7 +17,7 @@
 const int GRID_SIZE = 8;
 
 //Indicates pixels to be moved at a time during swap.
-const int SWAP_SPEED = 10;
+const int SWAP_SPEED = 5;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1024;
@@ -48,11 +48,17 @@ public:
     //Return jewel identifier value.
     int value() { return m_id; };
     
+    //Return bool to indicate if jewel can be rendered.
+    bool render() { return m_render; };
+    
     //Sets coordinates.
     void setPosition(int x, int y);
     
     //Sets jewel identifier value.
     void setIdentifier(int val);
+    
+    //Used to indicate if jewel is to be rendered or not.
+    void setDraw(bool render);
     
     //Indicates swapping has been finalised.
     void stopDragging();
@@ -78,6 +84,9 @@ private:
     
     //bool to indicated whether jewel is being clicked on.
     bool m_drag;
+    
+    //bool to indicate if jewel is to be rendered.
+    bool m_render;
     
     //Coordinates where mouse was clicked.
     int m_x_click, m_y_click;

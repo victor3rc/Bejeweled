@@ -50,7 +50,10 @@ void Window::start()
         while(!quit)
         {
             //Key to consult jewels.
-            pair<int, int> key;
+            pair<int, int> swapper, swapped;
+            
+            //indicates when there is a swap
+            bool swap = false;
             
             //Handle events on queue
             while( SDL_PollEvent( &e ) != 0 )
@@ -66,35 +69,42 @@ void Window::start()
                 {
                     for(int y = 0; y < m_grid.size(); ++y)
                     {
-                        key = make_pair(x, y);
+                        swapper = make_pair(x, y);
                         
-                        int swap_event = m_grid[key].handleEvent(&e);
+                        int swap_event = m_grid[swapper].handleEvent(&e);
                         
                         //Redraw if swap event relevant.
                         if(swap_event != 0)
                         {
                             //Set jewel clicked on as top jewel.
-                            m_top_jewel = key;
+                            m_top_jewel = swapper;
+                            
+                            swap = true;
                             
                             switch(swap_event)
                             {
                                 case 1:
                                     //Swap left.
-                                    swapAnimation(make_pair(key.first, key.second-1), key, true);
+                                    swapped = make_pair(swapper.first, swapper.second-1);
+                                    swapAnimation(swapped, swapper, true);
                                     goto restart;
                                 case 2:
                                     //Swap right.
-                                    swapAnimation(key, make_pair(key.first, key.second+1), true);
+                                    swapped = make_pair(swapper.first, swapper.second+1);
+                                    swapAnimation(swapper, swapped, true);
                                     goto restart;
                                 case 3:
                                     //Swap above.
-                                    swapAnimation(make_pair(key.first-1, key.second), key, false);
+                                    swapped = make_pair(swapper.first-1, swapper.second);
+                                    swapAnimation(swapped, swapper, false);
                                     goto restart;
                                 case 4:
                                     //Swap below
-                                    swapAnimation(key, make_pair(key.first+1, key.second), false);
+                                    swapped = make_pair(swapper.first+1, swapper.second);
+                                    swapAnimation(swapper, swapped, false);
                                     goto restart;
                                 default:
+                                    swap = false;
                                     continue;
                             }
                         }
@@ -102,6 +112,24 @@ void Window::start()
                 }
                 
                 restart:
+                
+                //If there was a swap.
+                if(swap)
+                {
+                    //Check for new combinations for both jewels swapped.
+                    if(m_grid.findCombinations(swapped))
+                    {
+                        drawGame();
+                    }
+                    
+                    if(m_grid.findCombinations(swapper))
+                    {
+                        drawGame();
+                    }
+                    
+                    swap = false;
+                }
+                
                 continue;
             }
         }
@@ -179,8 +207,11 @@ void Window::applyJewels()
     {
         if(jewel.first != m_top_jewel)
         {
-            //apply jewel in place
-            applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
+            //apply jewel in place, if available.
+            if(jewel.second.render())
+            {
+                applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
+            }
         }
     }
     

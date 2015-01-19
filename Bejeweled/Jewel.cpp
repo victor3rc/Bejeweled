@@ -12,7 +12,11 @@ using namespace std;
 
 Jewel::Jewel()
 {
+    //Not being dragged at creation.
     m_drag = false;
+    
+    //To be rendered at creation.
+    m_render = true;
 }
 
 void Jewel::setPosition(int x, int y)
@@ -24,6 +28,11 @@ void Jewel::setPosition(int x, int y)
 void Jewel::setIdentifier(int val)
 {
     m_id = val;
+}
+
+void Jewel::setDraw(bool render)
+{
+    m_render = render;
 }
 
 void Jewel::stopDragging()
@@ -86,6 +95,15 @@ int Jewel::handleEvent( SDL_Event* e )
                     {
                         setClickLocation(x, y);
                         m_drag = true;
+                    }
+                    
+                    break;
+                    
+                case SDL_MOUSEBUTTONUP:
+                    
+                    if(e->button.button == SDL_BUTTON_LEFT)
+                    {
+                        m_drag = false;
                     }
                     
                     break;
