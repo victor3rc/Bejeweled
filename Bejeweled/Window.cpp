@@ -64,6 +64,9 @@ void Window::start()
                     quit = true;
                 }
                 
+                //int to indicate which jewel to swap.
+                int swap_event = 0;
+                
                 //Handle events in jewels
                 for(int x = 0; x < m_grid.size(); ++x)
                 {
@@ -71,7 +74,8 @@ void Window::start()
                     {
                         swapper = make_pair(x, y);
                         
-                        int swap_event = m_grid[swapper].handleEvent(&e);
+                        //Find out which jewel to swap for
+                        swap_event = m_grid[swapper].handleEvent(&e);
                         
                         //Redraw if swap event relevant.
                         if(swap_event != 0)
@@ -87,21 +91,25 @@ void Window::start()
                                     //Swap left.
                                     swapped = make_pair(swapper.first, swapper.second-1);
                                     swapAnimation(swapped, swapper, true);
+                                    combine(swapped, swapper, true);
                                     goto restart;
                                 case 2:
                                     //Swap right.
                                     swapped = make_pair(swapper.first, swapper.second+1);
                                     swapAnimation(swapper, swapped, true);
+                                    combine(swapper, swapped, true);
                                     goto restart;
                                 case 3:
                                     //Swap above.
                                     swapped = make_pair(swapper.first-1, swapper.second);
                                     swapAnimation(swapped, swapper, false);
+                                    combine(swapped, swapper, false);
                                     goto restart;
                                 case 4:
                                     //Swap below
                                     swapped = make_pair(swapper.first+1, swapper.second);
                                     swapAnimation(swapper, swapped, false);
+                                    combine(swapper, swapped, false);
                                     goto restart;
                                 default:
                                     swap = false;
@@ -112,24 +120,6 @@ void Window::start()
                 }
                 
                 restart:
-                
-                //If there was a swap.
-                if(swap)
-                {
-                    //Check for new combinations for both jewels swapped.
-                    if(m_grid.findCombinations(swapped))
-                    {
-                        drawGame();
-                    }
-                    
-                    if(m_grid.findCombinations(swapper))
-                    {
-                        drawGame();
-                    }
-                    
-                    swap = false;
-                }
-                
                 continue;
             }
         }
@@ -306,7 +296,39 @@ void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
     m_grid[higher].stopDragging();
 }
 
+void Window::combine(const pair<int,int>& swapper, const pair<int,int>& swapped, int x_axis)
+{
+    //indicates if combinations were made
+    bool combined = false;
+    
+    //Check for new combinations for both jewels swapped.
+    if(m_grid.findCombinations(swapped))
+    {
+        combined = true;
+        
+        drawGame();
+    }
+    
+    if(m_grid.findCombinations(swapper))
+    {
+        combined = true;
+        
+        drawGame();
+    }
+    
+    if(combined == false)
+    {
+        if(x_axis)
+        {
+            swapAnimation(swapper, swapped, true);
+        }
+        else
+        {
+            swapAnimation(swapper, swapped, false);
+        }
+    }
 
+}
 
 
 

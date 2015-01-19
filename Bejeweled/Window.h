@@ -63,6 +63,12 @@ private:
     //'higher' jewel to be swapped.
     void indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher);
     
+    //Check for jewels combinations in neighbouring jewels.
+    //'swapper' is first jewel swapped
+    //'swapped' is the jewel swapped for.
+    //'x_axis' indicates if swap was performed on x-axis (true) or y-axis (false)
+    void combine(const std::pair<int,int>& swapper, const std::pair<int,int>& swapped, int x_axis);
+    
     //The window.
     SDL_Window* m_window;
     
