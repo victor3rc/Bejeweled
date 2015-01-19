@@ -336,96 +336,40 @@ void Window::combine(const pair<int,int>& swapper, const pair<int,int>& swapped,
 
 void Window::updateJewels()
 {
-    auto droppers = findDroppers();
+    auto droppers = m_grid.findDroppers();
     
     //Drop jewels.
-    drop(droppers);
+    dropAnimation(droppers);
 }
 
-vector<pair<int,int>> Window::findDroppers()
-{
-    //Keys to query values for current jewel being examined, and the one above.
-    pair<int,int> current, above;
-    
-    //Jewels to be dropped.
-    vector<pair<int,int>> output;
-    
-    //Cycle through grid jewels backwards.
-    for(int x = GRID_SIZE-1; x >= 0; --x)
-    {
-        for(int y = GRID_SIZE-1; y >= 1; --y)
-        {
-            current = make_pair(x, y);
-            above = make_pair(x-1, y);
-            
-            //If current jewel is empty and the one above isn't, indicate it needs to drop.
-            if(m_grid[current].value() == -1 &&
-               m_grid[above].value() != -1)
-            {
-                output.push_back(above);
-                
-                m_grid[above].setDrop(true);
-    
-                //Check if jewels above were also erased
-                while(current.first < 8)
-                {
-                    m_grid[above].setDropTarget(m_grid[current].x(), m_grid[current].y());
-                    
-                    //Look at jewel below.
-                    ++current.first;
-                    
-                    //Indicate space is empty, if not already indicated.
-                    if(m_grid[current].value() != -1)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        m_grid[current].setIdentifier(-1);
-                    }
-                }
-            }
-        }
-    }
-    
-    return output;
-}
-
-void Window::drop(vector<pair<int, int>> &droppers)
+void Window::dropAnimation(vector<pair<int, int>> &droppers)
 {
     //Indicates if jewels are still dropping.
-    bool dropping = true;
+    bool dropping = false;
     
-    //while jewels to drop
     do
     {
-        for(auto& key : droppers)
+        //Cycle through jewels in gid
+        for(auto& jewel : m_grid.grid())
         {
-            //Grab jewel in question
-            Jewel& current = m_grid[key];
-            
-            dropping = false;
-            
-            //If jewel is to be dropped
-            if(current.drop())
+            if(jewel.second.drop())
             {
-                current.setPosition(current.x(), current.y() + SWAP_SPEED);
-                
-                //If has reached its drop target, stop dropping.
-                if(current.y() >= current.yTarget())
+                jewel.second.setPosition(jewel.second.x(),
+                                         jewel.second.y() + DROP_SPEED);
+                //printf("%i-%i: %i tar %i\n", jewel.first.first, jewel.first.second, jewel.second.y(), jewel.second.yTarget());
+                if(jewel.second.y() >= jewel.second.yTarget())
                 {
-                    current.setDrop(false);
-                    
-                    //update jewel value and its key. Clear dropTarget position in jewel.
+                    //reset jewel
+                    jewel.second.setDrop(false);
                 }
                 else
                 {
                     dropping = true;
                 }
-                
-                drawGame();
             }
         }
+        
+        drawGame();
     }while(dropping);
 }
 

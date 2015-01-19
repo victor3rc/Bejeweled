@@ -16,8 +16,9 @@
 
 const int GRID_SIZE = 8;
 
-//Indicates pixels to be moved at a time during swap.
-const int SWAP_SPEED = 5;
+//Indicates pixels to be moved at a time during swap and drop.
+const int SWAP_SPEED = 2;
+const int DROP_SPEED = 5;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1024;

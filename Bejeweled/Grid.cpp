@@ -17,7 +17,7 @@ Grid::Grid()
     srand(time(NULL));
 }
 
-const map<pair<int, int>, Jewel>& Grid::grid()
+map<pair<int, int>, Jewel>& Grid::grid()
 {
     return m_grid;
 }
@@ -131,6 +131,53 @@ bool Grid::findCombinations(const pair<int, int>& swapped)
     }
 }
 
+vector<pair<int,int>> Grid::findDroppers()
+{
+    //Jewels to be dropped.
+    vector<pair<int,int>> output;
+    
+    //Keys to query values for current jewel being examined, and the one above.
+    pair<int,int> current, above;
+    
+    int targetX = 0, targetY = 0;
+    
+    //Cycle through columns.
+    for(int y = GRID_SIZE-1; y >= 0; --y)
+    {
+        //indicates if there's an empty space
+        bool hole = false;
+        
+        for(int x = GRID_SIZE-1; x >= 0; --x)
+        {
+            current = make_pair(x, y);
+            
+            if(m_grid[current].value() == -1)
+            {
+                //set drop target.
+                targetX = m_grid[current].x();
+                targetY = m_grid[current].y();
+                
+                hole = true;
+            }
+            else if (hole)
+            {
+                //If jewel is still there
+                if(m_grid[current].value() != -1)
+                {
+                    //set drop target and indicate jewel is meant to drop.
+                    m_grid[current].setDropTarget(targetX, targetY);
+                    m_grid[current].setDrop(true);
+                }
+                
+                //update drop target.
+                targetY -= JEWEL_HEIGHT + CUSHION;
+            }
+        }
+    }
+   
+    return output;
+}
+
 Jewel& Grid::operator[](const pair<int, int>& key)
 {
     return m_grid[key];
@@ -216,7 +263,22 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
     }
 }
 
-
+void Grid::dropAbove(pair<int, int> current)
+{
+    pair<int,int> above;
+    
+    while(current.first >= 0)
+    {
+        above = make_pair(current.first - 1, current.second);
+        
+        //Set jewel above to drop. Set its drop target also.
+        m_grid[above].setDrop(true);
+        m_grid[above].setDropTarget(m_grid[current].xTarget(),
+                                    m_grid[current].yTarget() - JEWEL_HEIGHT - CUSHION);
+        
+        --current.first;
+    }
+}
 
 
 

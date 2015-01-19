@@ -69,16 +69,12 @@ private:
     //'x_axis' indicates if swap was performed on x-axis (true) or y-axis (false)
     void combine(const std::pair<int,int>& swapper, const std::pair<int,int>& swapped, int x_axis);
     
-    //Function used to update jewels.
+    //Function used to update jewels after combination.
     void updateJewels();
-    
-    //Find jewels which need to drop.
-    //returns vector with all keys to jewels to be dropped.
-    std::vector<std::pair<int,int>> findDroppers();
     
     //Drop jewels who have no jewels below.
     //'droppers' are the jeys to the jewels to be dropped.
-    void drop(std::vector<std::pair<int,int>>& droppers);
+    void dropAnimation(std::vector<std::pair<int,int>>& droppers);
     
     //The window.
     SDL_Window* m_window;
