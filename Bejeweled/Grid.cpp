@@ -151,7 +151,8 @@ vector<pair<int,int>> Grid::findDroppers()
         {
             current = make_pair(x, y);
             
-            if(m_grid[current].value() == -1)
+            //If jewel space empty and hole hasn't been declared yet
+            if(m_grid[current].value() == -1 && !hole)
             {
                 //set drop target.
                 targetX = m_grid[current].x();
@@ -159,23 +160,40 @@ vector<pair<int,int>> Grid::findDroppers()
                 
                 hole = true;
             }
-            else if (hole)
+            //If hole has been detected
+            else if(hole)
             {
-                //If jewel is still there
+                //If there is a jewel, set to drop
                 if(m_grid[current].value() != -1)
                 {
+                    //Number of spaces to drop
+                    int spaces = (targetY-m_grid[current].y())/(JEWEL_HEIGHT+CUSHION);
+                    
                     //set drop target and indicate jewel is meant to drop.
                     m_grid[current].setDropTarget(targetX, targetY);
-                    m_grid[current].setDrop(true);
+                    m_grid[current].setDrop(true, spaces);
+                    
+                    //update drop target.
+                    targetY -= JEWEL_HEIGHT + CUSHION;
                 }
-                
-                //update drop target.
-                targetY -= JEWEL_HEIGHT + CUSHION;
             }
         }
     }
    
     return output;
+}
+
+void Grid::moveJewel(const pair<int,int>& moved, const pair<int,int>& space)
+{
+    //Make jewel in space = moved jewel.
+    m_grid[space] = m_grid[moved];
+    
+    //Indicate space jewel moved from is now empty.
+    m_grid[moved].setIdentifier(-1);
+    
+    //Indicate jewels are not dropping anymore.
+    m_grid[moved].setDrop(false, 0);
+    m_grid[space].setDrop(false, 0);
 }
 
 Jewel& Grid::operator[](const pair<int, int>& key)
@@ -265,19 +283,19 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
 
 void Grid::dropAbove(pair<int, int> current)
 {
-    pair<int,int> above;
-    
-    while(current.first >= 0)
-    {
-        above = make_pair(current.first - 1, current.second);
-        
-        //Set jewel above to drop. Set its drop target also.
-        m_grid[above].setDrop(true);
-        m_grid[above].setDropTarget(m_grid[current].xTarget(),
-                                    m_grid[current].yTarget() - JEWEL_HEIGHT - CUSHION);
-        
-        --current.first;
-    }
+//    pair<int,int> above;
+//    
+//    while(current.first >= 0)
+//    {
+//        above = make_pair(current.first - 1, current.second);
+//        
+//        //Set jewel above to drop. Set its drop target also.
+//        m_grid[above].setDrop(true);
+//        m_grid[above].setDropTarget(m_grid[current].xTarget(),
+//                                    m_grid[current].yTarget() - JEWEL_HEIGHT - CUSHION);
+//        
+//        --current.first;
+//    }
 }
 
 

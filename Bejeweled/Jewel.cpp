@@ -15,8 +15,9 @@ Jewel::Jewel()
     //Not being dragged at creation.
     m_drag = false;
     
-    //To be rendered at creation.
-    m_drop = false;
+    //Not to be dropped at creation.
+    m_drop.first = false;
+    m_drop.second = 0;
 }
 
 void Jewel::setPosition(int x, int y)
@@ -36,9 +37,10 @@ void Jewel::setIdentifier(int val)
     m_id = val;
 }
 
-void Jewel::setDrop(bool drop)
+void Jewel::setDrop(bool drop, int spaces)
 {
-    m_drop = drop;
+    m_drop.first = drop;
+    m_drop.second = spaces;
 }
 
 void Jewel::stopDragging()

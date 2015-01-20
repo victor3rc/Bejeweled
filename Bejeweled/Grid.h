@@ -35,6 +35,11 @@ public:
     //returns vector with all keys to jewels to be dropped.
     std::vector<std::pair<int,int>> findDroppers();
     
+    //Move jewel to a new position in grid.
+    //'moved' is key to jewel to be moved.
+    //'space' is key to space to be moved into.
+    void moveJewel(const std::pair<int,int>& moved, const std::pair<int,int>& space);
+    
     //Returns grid size.
     const int size() { return GRID_SIZE; };
     

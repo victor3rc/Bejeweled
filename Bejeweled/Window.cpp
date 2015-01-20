@@ -328,6 +328,7 @@ void Window::combine(const pair<int,int>& swapper, const pair<int,int>& swapped,
             swapAnimation(swapper, swapped, false);
         }
     }
+    //Combination found. Update grid.
     else
     {
         updateJewels();
@@ -336,6 +337,7 @@ void Window::combine(const pair<int,int>& swapper, const pair<int,int>& swapped,
 
 void Window::updateJewels()
 {
+    //Find jewels to be dropped.
     auto droppers = m_grid.findDroppers();
     
     //Drop jewels.
@@ -345,27 +347,64 @@ void Window::updateJewels()
 void Window::dropAnimation(vector<pair<int, int>> &droppers)
 {
     //Indicates if jewels are still dropping.
-    bool dropping = false;
+    bool dropping;
+    
+    //key to indicated jewel being looked at.
+    pair<int,int> current;
     
     do
     {
-        //Cycle through jewels in gid
-        for(auto& jewel : m_grid.grid())
+        dropping = false;
+        
+        //Cycle through jewels in grid (jewels in bottom row don't drop)
+        for(int x = GRID_SIZE-2; x >= 0; --x)//for(auto& g : m_grid.grid())
         {
-            if(jewel.second.drop())
+            for(int y = GRID_SIZE-1; y >=0; --y)
             {
-                jewel.second.setPosition(jewel.second.x(),
-                                         jewel.second.y() + DROP_SPEED);
-                //printf("%i-%i: %i tar %i\n", jewel.first.first, jewel.first.second, jewel.second.y(), jewel.second.yTarget());
-                if(jewel.second.y() >= jewel.second.yTarget())
+                current = make_pair(x, y);
+
+                if(m_grid[current].drop().first)
                 {
-                    //reset jewel
-                    jewel.second.setDrop(false);
+                    
+                    m_grid[current].setPosition(m_grid[current].x(),
+                                                m_grid[current].y() + DROP_SPEED);
+                    
+                    if(m_grid[current].y() >= m_grid[current].yTarget())
+                    {
+                        //Space jewel is moving into.
+                        pair<int,int> space = make_pair(current.first-m_grid[current].drop().second,
+                                                        current.second);
+                        
+                        //move jewel
+                        m_grid.moveJewel(current, space);
+                    }
+                    else
+                    {
+                        dropping = true;
+                    }
                 }
-                else
-                {
-                    dropping = true;
-                }
+                
+                //If jewel is set to drop.
+//                if(g.second.drop().first)
+//                {
+//                    
+//                    g.second.setPosition(g.second.x(),
+//                                         g.second.y() + DROP_SPEED);
+//
+//                    if(g.second.y() >= g.second.yTarget())
+//                    {
+//                        //Space jewel is moving into.
+//                        pair<int,int> space = make_pair(g.first.first-g.second.drop().second,
+//                                                        g.first.second);
+//                        
+//                        //move jewel
+//                        m_grid.moveJewel(g.first, space);
+//                    }
+//                    else
+//                    {
+//                        dropping = true;
+//                    }
+//                }
             }
         }
         

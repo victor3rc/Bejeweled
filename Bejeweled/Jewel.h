@@ -43,18 +43,18 @@ public:
     Jewel();
     
     //Return coordinates.
-    int x() { return m_position.x; };
-    int y() { return m_position.y; };
+    const int& x() { return m_position.x; };
+    const int& y() { return m_position.y; };
     
     //Return target coordinates
-    int xTarget() { return m_target.x; };
-    int yTarget() { return m_target.y; };
+    const int& xTarget() { return m_target.x; };
+    const int& yTarget() { return m_target.y; };
     
     //Return jewel identifier value.
-    int value() { return m_id; };
+    const int& value() { return m_id; };
     
-    //Returns bool indicating if jewel is to be dropped.
-    bool drop() { return m_drop; };
+    //Returns bool indicating if jewel is to be dropped, and how many spaces.
+    const std::pair<bool,int>& drop() { return m_drop; };
     
     //Sets coordinates.
     void setPosition(int x, int y);
@@ -66,7 +66,7 @@ public:
     void setIdentifier(int val);
     
     //Indicates if jewel is being dropped or not.
-    void setDrop(bool drop);
+    void setDrop(bool drop, int spaces);
     
     //Indicates swapping has been finalised.
     void stopDragging();
@@ -94,8 +94,8 @@ private:
     //bool to indicated whether jewel is being clicked on.
     bool m_drag;
     
-    //bool to indicate if jewel is to be dropped.
-    bool m_drop;
+    //bool to indicate if jewel is to be dropped and integer indicating how many spaces it has to drop.
+    std::pair<bool, int> m_drop;
     
     //Coordinates where mouse was clicked.
     int m_x_click, m_y_click;
