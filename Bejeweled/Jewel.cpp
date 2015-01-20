@@ -37,6 +37,11 @@ void Jewel::setIdentifier(int val)
     m_id = val;
 }
 
+void Jewel::setVacant(bool vacant)
+{
+    m_vacant = vacant;
+}
+
 void Jewel::setDrop(bool drop, int spaces)
 {
     m_drop.first = drop;

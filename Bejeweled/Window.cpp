@@ -198,7 +198,7 @@ void Window::applyJewels()
         if(jewel.first != m_top_jewel)
         {
             //apply jewel in place, if available.
-            if(jewel.second.value() != -1 )//render())
+            if(!jewel.second.vacant())//render())
             {
                 applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
             }
@@ -305,14 +305,12 @@ void Window::combine(const pair<int,int>& swapper, const pair<int,int>& swapped,
     if(m_grid.findCombinations(swapped))
     {
         combined = true;
-        
         drawGame();
     }
     
     if(m_grid.findCombinations(swapper))
     {
-        combined = true;
-        
+        combined = true;        
         drawGame();
     }
     
@@ -372,7 +370,7 @@ void Window::dropAnimation(vector<pair<int, int>> &droppers)
                     if(m_grid[current].y() >= m_grid[current].yTarget())
                     {
                         //Space jewel is moving into.
-                        pair<int,int> space = make_pair(current.first-m_grid[current].drop().second,
+                        pair<int,int> space = make_pair(current.first-m_grid[current].drop().second+1,
                                                         current.second);
                         
                         //move jewel
@@ -383,28 +381,6 @@ void Window::dropAnimation(vector<pair<int, int>> &droppers)
                         dropping = true;
                     }
                 }
-                
-                //If jewel is set to drop.
-//                if(g.second.drop().first)
-//                {
-//                    
-//                    g.second.setPosition(g.second.x(),
-//                                         g.second.y() + DROP_SPEED);
-//
-//                    if(g.second.y() >= g.second.yTarget())
-//                    {
-//                        //Space jewel is moving into.
-//                        pair<int,int> space = make_pair(g.first.first-g.second.drop().second,
-//                                                        g.first.second);
-//                        
-//                        //move jewel
-//                        m_grid.moveJewel(g.first, space);
-//                    }
-//                    else
-//                    {
-//                        dropping = true;
-//                    }
-//                }
             }
         }
         

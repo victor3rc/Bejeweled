@@ -10,14 +10,14 @@
 	<string>Bejeweled</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>8D8993707921FA6723867F8CC4DF1534C0AD19EF</key>
+		<key>26EE449494C108592B7A7D803F0319B72E540147</key>
 		<string>https://github.com/victor3rc/Bejeweled.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Bejeweled.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>8D8993707921FA6723867F8CC4DF1534C0AD19EF</key>
+		<key>26EE449494C108592B7A7D803F0319B72E540147</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
@@ -25,14 +25,14 @@
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>8D8993707921FA6723867F8CC4DF1534C0AD19EF</string>
+	<string>26EE449494C108592B7A7D803F0319B72E540147</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>8D8993707921FA6723867F8CC4DF1534C0AD19EF</string>
+			<string>26EE449494C108592B7A7D803F0319B72E540147</string>
 			<key>IDESourceControlWCCName</key>
 			<string>Bejeweled</string>
 		</dict>

@@ -18,7 +18,7 @@ const int GRID_SIZE = 8;
 
 //Indicates pixels to be moved at a time during swap and drop.
 const int SWAP_SPEED = 2;
-const int DROP_SPEED = 5;
+const int DROP_SPEED = 2;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1024;
@@ -53,6 +53,9 @@ public:
     //Return jewel identifier value.
     const int& value() { return m_id; };
     
+    //Return bool indicating if space vacant.
+    const bool& vacant() { return m_vacant; };
+    
     //Returns bool indicating if jewel is to be dropped, and how many spaces.
     const std::pair<bool,int>& drop() { return m_drop; };
     
@@ -64,6 +67,9 @@ public:
     
     //Sets jewel identifier value.
     void setIdentifier(int val);
+    
+    //Sets jewel to indicate if its space has been left blank.
+    void setVacant(bool vacant);
     
     //Indicates if jewel is being dropped or not.
     void setDrop(bool drop, int spaces);
@@ -91,8 +97,9 @@ private:
     //1 - Black, 2 - Gray, 3 - pink, 4 - Blue, 5 - orange, 0 - no jewel
     int m_id;
     
-    //bool to indicated whether jewel is being clicked on.
-    bool m_drag;
+    //'m_drag' bool to indicated whether jewel is being clicked on.
+    //'m_vacant' indicates if jewel space has been left vacant
+    bool m_drag, m_vacant;
     
     //bool to indicate if jewel is to be dropped and integer indicating how many spaces it has to drop.
     std::pair<bool, int> m_drop;

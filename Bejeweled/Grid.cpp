@@ -55,6 +55,7 @@ void Grid::populate()
             Jewel jewel;
             jewel.setPosition(coord_x, coord_y);
             jewel.setIdentifier(id);
+            jewel.setVacant(false);
             
             //Add jewel to grid.
             m_grid.insert(make_pair(key, jewel));
@@ -114,15 +115,24 @@ bool Grid::findCombinations(const pair<int, int>& swapped)
         ++below;
     }
     
+    //Indicates if combination was made.
+    bool combined = false;
+    
     //Combine if enough jewels are equal to their neighbours.
     if(left+right > 1)
     {
         combine(swapped, left, right, true);
-        return true;
+        combined = true;
     }
-    else if(above+below > 1)
+    
+    if(above+below > 1)
     {
         combine(swapped, above, below, false);
+        combined = true;
+    }
+    
+    if(combined)
+    {
         return true;
     }
     else
@@ -147,12 +157,15 @@ vector<pair<int,int>> Grid::findDroppers()
         //indicates if there's an empty space
         bool hole = false;
         
+        //Indicates number of drops in this column
+        int spaces_dropped = 0;
+        
         for(int x = GRID_SIZE-1; x >= 0; --x)
         {
             current = make_pair(x, y);
             
             //If jewel space empty and hole hasn't been declared yet
-            if(m_grid[current].value() == -1 && !hole)
+            if(!hole && m_grid[current].vacant())
             {
                 //set drop target.
                 targetX = m_grid[current].x();
@@ -160,22 +173,24 @@ vector<pair<int,int>> Grid::findDroppers()
                 
                 hole = true;
             }
-            //If hole has been detected
-            else if(hole)
+            //If hole has been detected and there is a jewel in space
+            else if(hole && !m_grid[current].vacant())
             {
-                //If there is a jewel, set to drop
-                if(m_grid[current].value() != -1)
+                //update spaces dropped
+                ++spaces_dropped;
+                
+                //set drop target and indicate jewel is meant to drop.
+                m_grid[current].setDropTarget(targetX, targetY);
+                m_grid[current].setDrop(true, spaces_dropped);
+                
+                //Check if space has been left vacant.
+                if((GRID_SIZE-spaces_dropped) < 0)
                 {
-                    //Number of spaces to drop
-                    int spaces = (targetY-m_grid[current].y())/(JEWEL_HEIGHT+CUSHION);
-                    
-                    //set drop target and indicate jewel is meant to drop.
-                    m_grid[current].setDropTarget(targetX, targetY);
-                    m_grid[current].setDrop(true, spaces);
-                    
-                    //update drop target.
-                    targetY -= JEWEL_HEIGHT + CUSHION;
+                    m_grid[current].setVacant(true);
                 }
+                
+                //update drop target.
+                targetY -= JEWEL_HEIGHT + CUSHION;
             }
         }
     }
@@ -187,9 +202,6 @@ void Grid::moveJewel(const pair<int,int>& moved, const pair<int,int>& space)
 {
     //Make jewel in space = moved jewel.
     m_grid[space] = m_grid[moved];
-    
-    //Indicate space jewel moved from is now empty.
-    m_grid[moved].setIdentifier(-1);
     
     //Indicate jewels are not dropping anymore.
     m_grid[moved].setDrop(false, 0);
@@ -246,7 +258,7 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
     //Key to jewel to erase.
     pair<int,int> adjacent;
     
-    m_grid[key].setIdentifier(-1);
+    m_grid[key].setVacant(true);
     
     //Erase number of jewels indicated.
     for(int i = 1; i < lower+1; ++i)
@@ -261,7 +273,7 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
         }
         
         //Erase jewel.
-        m_grid[adjacent].setIdentifier(-1);
+        m_grid[adjacent].setVacant(true);
     }
     
     //Erase number of jewels indicated.
@@ -277,7 +289,7 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
         }
         
         //Erase jewel
-        m_grid[adjacent].setIdentifier(-1);
+        m_grid[adjacent].setVacant(true);
     }
 }
 
