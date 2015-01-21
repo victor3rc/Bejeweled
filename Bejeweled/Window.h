@@ -56,18 +56,13 @@ private:
     //'lower' is jewel to the left on horizontal swap or above in a vertical swap.
     //'higher' is jewel to the right on horizontal swap or below in a vertical swap.
     //'horizontal' indicates horizontal (true) or vertical (false) swap.
-    void swapAnimation(std::pair<int, int> lower, std::pair<int, int> higher, bool horizontal);
+    //'back' indicates if jewels are being swapped back (true) or not (false)
+    void swapAnimation(std::pair<int, int> lower, std::pair<int, int> higher, bool horizontal, bool back);
     
     //Updates grid containing jewels, swapping two jewels indicated.
     //'lower' jewel to be swapped.
     //'higher' jewel to be swapped.
     void indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher);
-    
-    //Check for jewels combinations in neighbouring jewels.
-    //'swapper' is first jewel swapped
-    //'swapped' is the jewel swapped for.
-    //'x_axis' indicates if swap was performed on x-axis (true) or y-axis (false)
-    void combine(const std::pair<int,int>& swapper, const std::pair<int,int>& swapped, int x_axis);
     
     //Function used to update jewels after combination.
     void updateJewels();
@@ -75,6 +70,8 @@ private:
     //Drop jewels who have no jewels below.
     //'droppers' are the jeys to the jewels to be dropped.
     void dropAnimation(std::vector<std::pair<int,int>>& droppers);
+    
+    void swapJewels(const std::pair<int,int>& swapper, const int event, bool back);
     
     //The window.
     SDL_Window* m_window;

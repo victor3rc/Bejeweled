@@ -27,9 +27,9 @@ public:
     //Returns grid.
     std::map<std::pair<int, int>, Jewel>& grid();
     
-    //Check if jewels around jewel indicated give a combination.
-    //'key' indicates jewel.
-    bool findCombinations(const std::pair<int, int>& key);
+    //Check if jewels in grid give a combination.
+    //returns bool indicating if any combinations were found.
+    bool findCombinations();
     
     //Find jewels which need to drop.
     //returns vector with all keys to jewels to be dropped.
@@ -63,6 +63,10 @@ private:
     //Check if jewels jewel given need to be dropped also.
     //'current' is key to jewel which check will be carried on.
     void dropAbove(std::pair<int, int> current);
+    
+    //Checks jewels around jewel given, to see if there is a combination.
+    //'key' is jewel indicating jewel to check for.
+    bool matchAround(const std::pair<int,int>& key);
     
     //Grid
     std::map<std::pair<int, int>, Jewel> m_grid;

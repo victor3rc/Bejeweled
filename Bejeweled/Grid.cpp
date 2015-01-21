@@ -70,75 +70,33 @@ void Grid::populate()
     }
 }
 
-bool Grid::findCombinations(const pair<int, int>& swapped)
+bool Grid::findCombinations()
 {
-    //Count of adjacent jewels that match jewel given.
-    int left = 0, right = 0, above = 0, below = 0;
-
-    //Used as key to query adjacent jewel. Initially set to jewel to the left.
-    pair<int,int> adjacent = make_pair(swapped.first, swapped.second-1);
+    //flag indicating if there were any combinations
+    bool output = false;
     
-    while(m_grid[swapped].value() == m_grid[adjacent].value() &&
-          adjacent.second >= 0)
+    //Current key to jewel being looked at
+    pair<int,int> current;
+    
+    for(int x = 0; x < GRID_SIZE; ++x)
     {
-        ++left;
-        --adjacent.second;
+        for(int y = 0; y < GRID_SIZE; ++y)
+        {
+            current = make_pair(x, y);
+    
+            //if jewel is part of a combination.
+            if(matchAround(current))
+            {
+                //Set as vacant.
+                m_grid[current].setVacant(true);
+                
+                //indicate combination.
+                output = true;
+            }
+        }
     }
     
-    //Set adjacent to jewel to the right.
-    adjacent = make_pair(swapped.first, swapped.second+1);
-    
-    while(m_grid[swapped].value() == m_grid[adjacent].value() &&
-          adjacent.second < 8)
-    {
-        ++adjacent.second;
-        ++right;
-    }
-    
-    //Set adjacent to jewel above.
-    adjacent = make_pair(swapped.first-1, swapped.second);
-    
-    while(m_grid[swapped].value() == m_grid[adjacent].value() &&
-          adjacent.first >= 0)
-    {
-        --adjacent.first;
-        ++above;
-    }
-    
-    //Set adjacent to jewel below.
-    adjacent = make_pair(swapped.first+1, swapped.second);
-    
-    while(m_grid[swapped].value() == m_grid[adjacent].value() &&
-          adjacent.first < 8)
-    {
-        ++adjacent.first;
-        ++below;
-    }
-    
-    //Indicates if combination was made.
-    bool combined = false;
-    
-    //Combine if enough jewels are equal to their neighbours.
-    if(left+right > 1)
-    {
-        combine(swapped, left, right, true);
-        combined = true;
-    }
-    
-    if(above+below > 1)
-    {
-        combine(swapped, above, below, false);
-        combined = true;
-    }
-    
-    if(combined)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return output;
 }
 
 vector<pair<int,int>> Grid::findDroppers()
@@ -202,6 +160,9 @@ void Grid::moveJewel(const pair<int,int>& moved, const pair<int,int>& space)
 {
     //Make jewel in space = moved jewel.
     m_grid[space] = m_grid[moved];
+    
+    //Indicate that space is now occupied.
+    m_grid[space].setVacant(false);
     
     //Indicate jewels are not dropping anymore.
     m_grid[moved].setDrop(false, 0);
@@ -308,6 +269,99 @@ void Grid::dropAbove(pair<int, int> current)
 //        
 //        --current.first;
 //    }
+}
+
+bool Grid::matchAround(const std::pair<int, int>& key)
+{
+    //color of jewel.
+    int color = m_grid[key].value();
+    
+    //keys to adjacent jewels to check combinations for.
+    pair<int,int> adjacent1, adjacent2;
+    
+    //Check if jewel given is the one in the middle of horizontal combination
+    if(key.second != 0 && key.second != 7)
+    {
+        //Jewels directly left and right
+        adjacent1 = make_pair(key.first, key.second-1);
+        adjacent2 = make_pair(key.first, key.second+1);
+        
+        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        {
+            return true;
+        }
+    }
+    
+    //Check if jewel given is the one on the right of a combination
+    if(key.second >= 2)
+    {
+        //Jewels directly left and right
+        adjacent1 = make_pair(key.first, key.second-1);
+        adjacent2 = make_pair(key.first, key.second-2);
+        
+        //Jewel given is the one in the middle of combination
+        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        {
+            return true;
+        }
+    }
+    
+    //Check if jewel given is the one on the left of a combination
+    if(key.second <= 5)
+    {
+        //Jewels directly left and right
+        adjacent1 = make_pair(key.first, key.second+1);
+        adjacent2 = make_pair(key.first, key.second+2);
+        
+        //Jewel given is the one in the middle of combination
+        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        {
+            return true;
+        }
+    }
+    
+    //Check if jewel given is the one in the middle of vertical combination
+    if(key.first != 0 && key.first != 7)
+    {
+        //Jewels directly left and right
+        adjacent1 = make_pair(key.first-1, key.second);
+        adjacent2 = make_pair(key.first+1, key.second);
+        
+        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        {
+            return true;
+        }
+    }
+    
+    //Check if jewel given is the one above in a combination
+    if(key.first >= 2)
+    {
+        //Jewels directly left and right
+        adjacent1 = make_pair(key.first-1, key.second);
+        adjacent2 = make_pair(key.first-2, key.second);
+        
+        //Jewel given is the one in the middle of combination
+        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        {
+            return true;
+        }
+    }
+    
+    //Check if jewel given is the one below in a combination
+    if(key.first <= 5)
+    {
+        //Jewels directly left and right
+        adjacent1 = make_pair(key.first+1, key.second);
+        adjacent2 = make_pair(key.first+2, key.second);
+        
+        //Jewel given is the one in the middle of combination
+        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 
