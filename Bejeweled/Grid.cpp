@@ -51,11 +51,9 @@ void Grid::populate()
                 id = rand() % 5;
             }
             
-            //Create jewel.
-            Jewel jewel;
-            jewel.setPosition(coord_x, coord_y);
+            //Create jewel and set its id.
+            Jewel jewel(coord_x, coord_y);
             jewel.setIdentifier(id);
-            jewel.setVacant(false);
             
             //Add jewel to grid.
             m_grid.insert(make_pair(key, jewel));

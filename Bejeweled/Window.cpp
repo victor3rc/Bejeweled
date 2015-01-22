@@ -50,7 +50,7 @@ void Window::start()
         while(!quit)
         {
             //Key to consult jewels.
-            pair<int, int> swapper, swapped;
+            pair<int, int> swapper;
             
             //indicates when there is a swap
             bool swap = false;
@@ -86,7 +86,7 @@ void Window::start()
                             swap = true;
                             
                             //Carry out swap
-                            swapJewels(swapper, swap_event, false);
+                            swapJewels(swapper, swap_event);
                             
                             //If combined, update jewels
                             if(m_grid.findCombinations())
@@ -99,14 +99,14 @@ void Window::start()
                             else
                             {
                                 //swap_event needs to change to indicate opposite direction.
-                                //Change hardcoded bits
+                                //Change hardcoded bits?
                                 if(swap_event == 1 || swap_event == 3)
                                 {
-                                    swapJewels(swapper, ++swap_event, true);
+                                    swapJewels(swapper, ++swap_event);
                                 }
                                 else
                                 {
-                                    swapJewels(swapper, --swap_event, true);
+                                    swapJewels(swapper, --swap_event);
                                 }
                             }
                         }
@@ -192,7 +192,7 @@ void Window::applyJewels()
         if(jewel.first != m_top_jewel)
         {
             //apply jewel in place, if available.
-            if(!jewel.second.vacant())//render())
+            if(!jewel.second.vacant())
             {
                 applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
             }
@@ -253,9 +253,9 @@ void Window::drawGame()
 
 void Window::swapAnimation(pair<int, int> lower, pair<int, int> higher, bool horizontal, bool back)
 {
-    //Original coordinates of jewel doing the swapping.
+    //Original fixed coordinates of jewel doing the swapping.
     int x_orig = m_grid[higher].x(), y_orig = m_grid[higher].y();
-
+    
     //While swap has not been completed yet.
     while(((m_grid[lower].x() != x_orig && horizontal) ||
           ((m_grid[lower].y() != y_orig) && !horizontal )))
@@ -288,13 +288,52 @@ void Window::swapAnimation(pair<int, int> lower, pair<int, int> higher, bool hor
                 m_grid[higher].setPosition(x_orig, m_grid[higher].y() + SWAP_SPEED);
             }
         }
-        
+    
         //Update game.
         drawGame();
     }
     
     //Swap jewels in grid
     indicateSwap(lower, higher);
+}
+    
+bool Window::swapAnimation(pair<int, int> jewel)
+{
+    //Original fixed coordinates of jewel doing the swapping.
+    int x_orig = m_grid[jewel].xOrig(), y_orig = m_grid[jewel].yOrig();
+    
+    //flag to indicate if swap needs to be rendered
+    bool output = false;
+    
+    //swap on horizontal axis
+    if(m_grid[jewel].x() != x_orig)
+    {
+        if(m_grid[jewel].x() < x_orig)
+        {
+            m_grid[jewel].setPosition(m_grid[jewel].x() + SWAP_SPEED, y_orig);
+        }
+        else
+        {
+            m_grid[jewel].setPosition(m_grid[jewel].x() - SWAP_SPEED, y_orig);
+        }
+        
+        output = true;
+    }
+    else if(m_grid[jewel].y() != y_orig)
+    {
+        if(m_grid[jewel].y() < y_orig)
+        {
+            m_grid[jewel].setPosition(x_orig, m_grid[jewel].y() + SWAP_SPEED);
+        }
+        else
+        {
+            m_grid[jewel].setPosition(x_orig, m_grid[jewel].y() - SWAP_SPEED);
+        }
+        
+        output = true;
+    }
+ 
+    return output;
 }
 
 void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
@@ -307,6 +346,10 @@ void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
     //Indicate they are not being dragged any longer.
     m_grid[lower].stopDragging();
     m_grid[higher].stopDragging();
+    
+    //indicate jewels are located in each other's fixed position.
+    m_grid[lower].setPosition(m_grid[higher].xOrig(), m_grid[higher].yOrig());
+    m_grid[higher].setPosition(m_grid[lower].xOrig(), m_grid[lower].yOrig());
 }
 
 void Window::updateJewels()
@@ -364,61 +407,64 @@ void Window::dropAnimation(vector<pair<int, int>> &droppers)
     }while(dropping);
 }
 
-void Window::swapJewels(const std::pair<int, int>& swapper, const int event, bool back)
+void Window::swapJewels(std::pair<int, int>& swapper, const int event)
 {
     pair<int,int> swapped;
     
+    //swap jewels in grid.
+    //update m_position.
     switch(event)
     {
         case 1:
             //Swap left.
-            if(!back)
-            {
-                swapped = make_pair(swapper.first, swapper.second-1);
-            }
-            else
-            {
-                swapped = make_pair(swapper.first, swapper.second+1);
-            }
-            swapAnimation(swapper, swapped, true, back);
+            swapped = make_pair(swapper.first, swapper.second-1);
             break;
         case 2:
             //Swap right.
-            if(!back)
-            {
-                swapped = make_pair(swapper.first, swapper.second+1);
-            }
-            else
-            {
-                swapped = make_pair(swapper.first, swapper.second-1);
-            }
-            swapAnimation(swapped, swapper, true, back);
+            swapped = make_pair(swapper.first, swapper.second+1);
             break;
         case 3:
             //Swap above.
-            if(!back)
-            {
-                swapped = make_pair(swapper.first-1, swapper.second);
-            }
-            else
-            {
-                swapped = make_pair(swapper.first+1, swapper.second);
-            }
-            swapAnimation(swapper, swapped, false, back);
+            swapped = make_pair(swapper.first-1, swapper.second);
             break;
         case 4:
             //Swap below
-            if(!back)
-            {
-                swapped = make_pair(swapper.first+1, swapper.second);
-            }
-            else
-            {
-                swapped = make_pair(swapper.first-1, swapper.second);
-            }
-            swapAnimation(swapped, swapper, false, back);
+            swapped = make_pair(swapper.first+1, swapper.second);
             break;
     }
+    
+    performSwap(swapper, swapped);
+    
+    //Update swapper to indicate where its jewel is on the grid.
+    swapper.first = swapped.first;
+    swapper.second = swapped.second;
+}
+
+void Window::performSwap(const std::pair<int, int> &swapper, const std::pair<int, int> &swapped)
+{
+    //swap jewels in grid, updating current position.
+    indicateSwap(swapper, swapped);
+    
+    bool render;
+    
+    //while swap needs to be rendered.
+    do
+    {
+        drawGame();
+        
+        render = false;
+        
+        if(swapAnimation(swapper))
+        {
+            render = true;
+        }
+        
+        if(swapAnimation(swapped))
+        {
+            render = true;
+        }
+        
+    }while(render);
 }
 
 

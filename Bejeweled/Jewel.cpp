@@ -10,14 +10,23 @@
 
 using namespace std;
 
-Jewel::Jewel()
+Jewel::Jewel() {}
+
+Jewel::Jewel(int x, int y)
+: m_x(x), m_y(y)
 {
+    //Set initial position.
+    setPosition(x, y);
+    
     //Not being dragged at creation.
     m_drag = false;
     
     //Not to be dropped at creation.
     m_drop.first = false;
     m_drop.second = 0;
+    
+    //Not vacant at creation.
+    m_vacant = false;
 }
 
 void Jewel::setPosition(int x, int y)
@@ -97,7 +106,7 @@ int Jewel::handleEvent( SDL_Event* e )
                     if(m_drag)
                     {
                         //Check for a swap, only if mouse is being dragged.
-                        return swap(x, y);
+                        return swapClick(x, y);
                     }
                     
                     break;
@@ -133,7 +142,7 @@ void Jewel::setClickLocation(int x, int y)
     m_y_click = y;
 }
 
-int Jewel::swap(int x, int y)
+int Jewel::swapClick(int x, int y)
 {
     //Swap left
     if(x < m_x_click - SWAP_SCOPE && m_position.x > LEFT_COLUMN)

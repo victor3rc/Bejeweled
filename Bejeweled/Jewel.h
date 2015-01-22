@@ -40,9 +40,14 @@ class Jewel
 {
 public:
     //Initializes internal variables
+    Jewel(int x, int y);
     Jewel();
     
-    //Return coordinates.
+    //Return original coordinates.
+    const int& xOrig() { return m_x; };
+    const int& yOrig() { return m_y; };
+    
+    //return current coordinates
     const int& x() { return m_position.x; };
     const int& y() { return m_position.y; };
     
@@ -88,9 +93,12 @@ private:
     //'x' coordinate of where mouse was clicked.
     //'y' coordinate of where mouse was clicked.
     //returns int indicating jewel to be swapped with. 1 = left, 2 = right, 3 = above and 4 = below. 0 = no swap.
-    int swap(int x, int y);
+    int swapClick(int x, int y);
     
-    //Top left position (m_position) and drop target (m_target)
+    //Top left position coordinates
+    int m_x, m_y;
+    
+    //Current position and drop target coordinates
     SDL_Point m_position, m_target;
     
     //Jewel identifier value. Indicates jewel color
