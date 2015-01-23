@@ -53,11 +53,7 @@ private:
     void drawGame();
     
     //Perform swap of two jewels in direction indicated.
-    //'lower' is jewel to the left on horizontal swap or above in a vertical swap.
-    //'higher' is jewel to the right on horizontal swap or below in a vertical swap.
-    //'horizontal' indicates horizontal (true) or vertical (false) swap.
-    //'back' indicates if jewels are being swapped back (true) or not (false)
-    void swapAnimation(std::pair<int, int> lower, std::pair<int, int> higher, bool horizontal, bool back);
+    //'jewel' is jewel where swap was activated.
     bool swapAnimation(std::pair<int, int> jewel);
     
     //Updates grid containing jewels, swapping two jewels indicated.
@@ -66,11 +62,7 @@ private:
     void indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher);
     
     //Function used to update jewels after combination.
-    void updateJewels();
-    
-    //Drop jewels who have no jewels below.
-    //'droppers' are the jeys to the jewels to be dropped.
-    void dropAnimation(std::vector<std::pair<int,int>>& droppers);
+    void dropJewels();
     
     void swapJewels(std::pair<int,int>& swapper, const int event);
     

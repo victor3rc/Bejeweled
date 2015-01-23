@@ -33,7 +33,7 @@ public:
     
     //Find jewels which need to drop.
     //returns vector with all keys to jewels to be dropped.
-    std::vector<std::pair<int,int>> findDroppers();
+    std::vector<std::pair<int,int>> setDroppers();
     
     //Move jewel to a new position in grid.
     //'moved' is key to jewel to be moved.

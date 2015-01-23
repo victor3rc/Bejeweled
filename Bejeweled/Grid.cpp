@@ -57,7 +57,7 @@ void Grid::populate()
             
             //Add jewel to grid.
             m_grid.insert(make_pair(key, jewel));
-            
+           
             //add cushion to coordinates.
             coord_x += JEWEL_WIDTH + CUSHION;
         }
@@ -83,7 +83,7 @@ bool Grid::findCombinations()
             current = make_pair(x, y);
     
             //if jewel is part of a combination.
-            if(matchAround(current))
+            if(matchAround(current) && !m_grid[current].vacant())
             {
                 //Set as vacant.
                 m_grid[current].setVacant(true);
@@ -97,7 +97,7 @@ bool Grid::findCombinations()
     return output;
 }
 
-vector<pair<int,int>> Grid::findDroppers()
+vector<pair<int,int>> Grid::setDroppers()
 {
     //Jewels to be dropped.
     vector<pair<int,int>> output;
@@ -105,48 +105,50 @@ vector<pair<int,int>> Grid::findDroppers()
     //Keys to query values for current jewel being examined, and the one above.
     pair<int,int> current, above;
     
-    int targetX = 0, targetY = 0;
-    
     //Cycle through columns.
     for(int y = GRID_SIZE-1; y >= 0; --y)
     {
-        //indicates if there's an empty space
-        bool hole = false;
-        
-        //Indicates number of drops in this column
-        int spaces_dropped = 0;
-        
         for(int x = GRID_SIZE-1; x >= 0; --x)
         {
             current = make_pair(x, y);
+            above = make_pair(x-1, y);
             
-            //If jewel space empty and hole hasn't been declared yet
-            if(!hole && m_grid[current].vacant())
+            if(m_grid[current].vacant())
             {
-                //set drop target.
-                targetX = m_grid[current].x();
-                targetY = m_grid[current].y();
+                int i = 1;
                 
-                hole = true;
-            }
-            //If hole has been detected and there is a jewel in space
-            else if(hole && !m_grid[current].vacant())
-            {
-                //update spaces dropped
-                ++spaces_dropped;
-                
-                //set drop target and indicate jewel is meant to drop.
-                m_grid[current].setDropTarget(targetX, targetY);
-                m_grid[current].setDrop(true, spaces_dropped);
-                
-                //Check if space has been left vacant.
-                if((GRID_SIZE-spaces_dropped) < 0)
+                //while jewel above is vacant
+                while(m_grid[above].vacant())
                 {
-                    m_grid[current].setVacant(true);
+                    ++i;
+                    above = make_pair(x-i, y);
+                    
+                    if (x-i >= 0)
+                    {
+                        output.push_back(current);
+                        break;
+                    }
                 }
                 
-                //update drop target.
-                targetY -= JEWEL_HEIGHT + CUSHION;
+                //If not reached the top row
+                if(x-i >= 0)
+                {
+                    //Set position and color of lower jewel to match jewel above.
+                    m_grid[current].setPosition(m_grid[above].x(), m_grid[above].y());
+                    m_grid[current].setIdentifier(m_grid[above].value());
+                    
+                    //set jewel to drop.
+                    m_grid[above].setVacant(true);
+                    m_grid[current].setVacant(false);
+                    
+                    //Indicate jewel has been inserted in current key and needs to drop
+                    output.push_back(current);
+                }
+                else
+                {
+                    //Indicate empty space at the top
+                    m_grid[current].setIdentifier(-1);
+                }
             }
         }
     }
@@ -331,7 +333,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         }
     }
     
-    //Check if jewel given is the one above in a combination
+    //Check if jewel given is the one below in a combination
     if(key.first >= 2)
     {
         //Jewels directly left and right
@@ -345,7 +347,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         }
     }
     
-    //Check if jewel given is the one below in a combination
+    //Check if jewel given is the one above in a combination
     if(key.first <= 5)
     {
         //Jewels directly left and right

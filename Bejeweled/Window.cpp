@@ -53,7 +53,7 @@ void Window::start()
             pair<int, int> swapper;
             
             //indicates when there is a swap
-            bool swap = false;
+            bool dropped = false;
             
             //Handle events on queue
             while( SDL_PollEvent( &e ) != 0 )
@@ -80,23 +80,21 @@ void Window::start()
                         //If jewel has been dragged to swap
                         if(swap_event != 0)
                         {
-                            //Set jewel clicked on as top jewel.
-                            m_top_jewel = swapper;
-                            
-                            swap = true;
+                            dropped = false;
                             
                             //Carry out swap
                             swapJewels(swapper, swap_event);
                             
-                            //If combined, update jewels
-                            if(m_grid.findCombinations())
+                            //If combinations were made, drop jewels
+                            while(m_grid.findCombinations())
                             {
-                                updateJewels();
-                                
-                                goto restart;
+                                dropJewels();
+                                SDL_Delay(500);
+                                dropped = true;
                             }
-                            //else, swap back
-                            else
+                            
+                            //if not dropped, swap back
+                            if(!dropped)
                             {
                                 //swap_event needs to change to indicate opposite direction.
                                 //Change hardcoded bits?
@@ -108,6 +106,11 @@ void Window::start()
                                 {
                                     swapJewels(swapper, --swap_event);
                                 }
+                            }
+                            //else, swap back
+                            else
+                            {
+                                goto restart;
                             }
                         }
                     }
@@ -185,22 +188,25 @@ void Window::applySurface(int x, int y, SDL_Surface *source, SDL_Surface *destin
 
 void Window::applyJewels()
 {
-    map<pair<int, int>, Jewel> jewels = m_grid.grid();
+    map<pair<int, int>, Jewel> grid = m_grid.grid();
     
-    for(auto& jewel : jewels)
+    for(auto& jewel : grid)
     {
         if(jewel.first != m_top_jewel)
         {
             //apply jewel in place, if available.
             if(!jewel.second.vacant())
             {
-                applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
+                if(jewel.first.first >= 0)
+                {
+                    applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
+                }
             }
         }
     }
     
     //apply jewel to appear on top of all other jewels last.
-    applySurface(jewels[m_top_jewel].x(), jewels[m_top_jewel].y(), m_jewels[jewels[m_top_jewel].value()], m_screenSurface);
+    applySurface(grid[m_top_jewel].x(), grid[m_top_jewel].y(), m_jewels[grid[m_top_jewel].value()], m_screenSurface);
 }
 
 bool Window::loadImage(SDL_Surface** obj, const string& path)
@@ -250,52 +256,6 @@ void Window::drawGame()
     //Update the surface
     SDL_UpdateWindowSurface(m_window);
 }
-
-void Window::swapAnimation(pair<int, int> lower, pair<int, int> higher, bool horizontal, bool back)
-{
-    //Original fixed coordinates of jewel doing the swapping.
-    int x_orig = m_grid[higher].x(), y_orig = m_grid[higher].y();
-    
-    //While swap has not been completed yet.
-    while(((m_grid[lower].x() != x_orig && horizontal) ||
-          ((m_grid[lower].y() != y_orig) && !horizontal )))
-    {
-        //swap on horizontal axis
-        if(horizontal)
-        {
-            if(back)
-            {
-                m_grid[lower].setPosition(m_grid[lower].x() + SWAP_SPEED, y_orig);
-                m_grid[higher].setPosition(m_grid[higher].x() - SWAP_SPEED, y_orig);
-            }
-            else
-            {
-                m_grid[lower].setPosition(m_grid[lower].x() - SWAP_SPEED, y_orig);
-                m_grid[higher].setPosition(m_grid[higher].x() + SWAP_SPEED, y_orig);
-            }
-        }
-        //swap on vertical axis
-        else
-        {
-            if(back)
-            {
-                m_grid[lower].setPosition(x_orig, m_grid[lower].y() + SWAP_SPEED);
-                m_grid[higher].setPosition(x_orig, m_grid[higher].y() - SWAP_SPEED);
-            }
-            else
-            {
-                m_grid[lower].setPosition(x_orig, m_grid[lower].y() - SWAP_SPEED);
-                m_grid[higher].setPosition(x_orig, m_grid[higher].y() + SWAP_SPEED);
-            }
-        }
-    
-        //Update game.
-        drawGame();
-    }
-    
-    //Swap jewels in grid
-    indicateSwap(lower, higher);
-}
     
 bool Window::swapAnimation(pair<int, int> jewel)
 {
@@ -338,10 +298,10 @@ bool Window::swapAnimation(pair<int, int> jewel)
 
 void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
 {
-    //Swap jewels in grid.
-    Jewel temp = m_grid[lower];
-    m_grid[lower] = m_grid[higher];
-    m_grid[higher] = temp;
+    //swap jewel colors.
+    int tempColor = m_grid[lower].value();
+    m_grid[lower].setIdentifier(m_grid[higher].value());
+    m_grid[higher].setIdentifier(tempColor);
     
     //Indicate they are not being dragged any longer.
     m_grid[lower].stopDragging();
@@ -352,58 +312,35 @@ void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
     m_grid[higher].setPosition(m_grid[lower].xOrig(), m_grid[lower].yOrig());
 }
 
-void Window::updateJewels()
+void Window::dropJewels()
 {
     //Find jewels to be dropped.
-    auto droppers = m_grid.findDroppers();
+    auto droppers = m_grid.setDroppers();
     
-    //Drop jewels.
-    dropAnimation(droppers);
-}
-
-void Window::dropAnimation(vector<pair<int, int>> &droppers)
-{
-    //Indicates if jewels are still dropping.
     bool dropping;
-    
-    //key to indicate jewel being looked at.
-    pair<int,int> current;
     
     do
     {
         dropping = false;
         
-        //Cycle through jewels in grid (jewels in bottom row don't drop)
-        for(int x = GRID_SIZE-2; x >= 0; --x)
+        for(auto& jewel : droppers)
         {
-            for(int y = GRID_SIZE-1; y >=0; --y)
+            if(m_grid[jewel].y() != m_grid[jewel].yOrig())
             {
-                current = make_pair(x, y);
-
-                if(m_grid[current].drop().first)
-                {
-                    
-                    m_grid[current].setPosition(m_grid[current].x(),
-                                                m_grid[current].y() + DROP_SPEED);
-                    
-                    if(m_grid[current].y() >= m_grid[current].yTarget())
-                    {
-                        //Space jewel is moving into.
-                        pair<int,int> space = make_pair(current.first-m_grid[current].drop().second,
-                                                        current.second);
-                        
-                        //move jewel
-                        m_grid.moveJewel(current, space);
-                    }
-                    else
-                    {
-                        dropping = true;
-                    }
-                }
+                //Adjust coordinates for jewel to drop
+                m_grid[jewel].setPosition(m_grid[jewel].x(), m_grid[jewel].y() + DROP_SPEED);
+                
+                //indicating jewels are dropping
+                dropping = true;
             }
         }
         
-        drawGame();
+        //Re-render if still dropping.
+        if(dropping)
+        {
+            drawGame();
+        }
+        
     }while(dropping);
 }
 
@@ -433,7 +370,10 @@ void Window::swapJewels(std::pair<int, int>& swapper, const int event)
             break;
     }
     
-    performSwap(swapper, swapped);
+    performSwap(swapped, swapper);
+    
+    //Set jewel clicked on as top jewel.
+    m_top_jewel = swapper;
     
     //Update swapper to indicate where its jewel is on the grid.
     swapper.first = swapped.first;
