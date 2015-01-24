@@ -13,6 +13,7 @@
 		F218771A1A6720CE00D02519 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F21877191A6720CE00D02519 /* SDL2.framework */; };
 		F218771D1A67CF3F00D02519 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F218771B1A67CF3F00D02519 /* Window.cpp */; };
 		F218771F1A67EC8F00D02519 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F218771E1A67EC8F00D02519 /* SDL2_image.framework */; };
+		F221D0981A7404970020EB75 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F221D0971A7404970020EB75 /* SDL2_mixer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +39,7 @@
 		F218771B1A67CF3F00D02519 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
 		F218771C1A67CF3F00D02519 /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
 		F218771E1A67EC8F00D02519 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		F221D0971A7404970020EB75 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 			files = (
 				F218771A1A6720CE00D02519 /* SDL2.framework in Frameworks */,
 				F218771F1A67EC8F00D02519 /* SDL2_image.framework in Frameworks */,
+				F221D0981A7404970020EB75 /* SDL2_mixer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,6 +59,7 @@
 		F21877061A670F3100D02519 = {
 			isa = PBXGroup;
 			children = (
+				F221D0971A7404970020EB75 /* SDL2_mixer.framework */,
 				F218771E1A67EC8F00D02519 /* SDL2_image.framework */,
 				F21877191A6720CE00D02519 /* SDL2.framework */,
 				F21877111A670F3100D02519 /* Bejeweled */,
@@ -236,6 +240,8 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/Library/Frameworks/SDL2.framework/Headers,
+					/Library/Frameworks/SDL2_image.framework/Headers,
+					/Library/Frameworks/SDL2_mixer.framework/Headers,
 				);
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",
@@ -257,6 +263,8 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/Library/Frameworks/SDL2.framework/Headers,
+					/Library/Frameworks/SDL2_image.framework/Headers,
+					/Library/Frameworks/SDL2_mixer.framework/Headers,
 				);
 				"HEADER_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <SDL2/SDL.h>
+#include <SDL2_mixer/SDL_mixer.h>
 
 #include "Grid.h"
 
@@ -77,6 +78,10 @@ private:
     
     //The bakground image
     SDL_Surface* m_background = NULL;
+    
+    //Sound effects
+    Mix_Chunk* m_soundSwap = NULL;
+    Mix_Chunk* m_soundCombine = NULL;
     
     //The 1st jewel
     std::vector<SDL_Surface*> m_jewels;

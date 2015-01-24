@@ -14,20 +14,6 @@ using namespace std;
 
 Window::Window()
 {
-    string background_path = "Images/Backdrop13.jpg";
-    
-    //Load background image.
-    if(!loadImage(&m_background, background_path.c_str()))
-    {
-        printf("Cannot load image %s! SDL Error: %s\n", background_path.c_str(), SDL_GetError());
-    }
-    
-    //Load jewels.
-    loadJewels();
-}
-
-void Window::start()
-{
     //Start up SDL and create window
     if(!init())
     {
@@ -35,93 +21,116 @@ void Window::start()
     }
     else
     {
-        //Main loop flag
-        bool quit = false;
+        string background_path = "Files/Backdrop13.jpg";
+        string soundSwap_path = "Files/woosh.wav";
+        string soundCombine_path = "Files/grenade.wav";
         
-        //Event handler
-        SDL_Event e;
-        
-        //Populate grid
-        m_grid.populate();
-        
-        //Draw background and jewels.
-        drawGame();
-        
-        while(!quit)
+        //Load background image.
+        if(!loadImage(&m_background, background_path.c_str()))
         {
-            //Key to consult jewels.
-            pair<int, int> swapper;
-            
-            //indicates when there is a swap
-            bool dropped = false;
-            
-            //Handle events on queue
-            while( SDL_PollEvent( &e ) != 0 )
+            printf("Cannot load image %s! SDL Error: %s\n", background_path.c_str(), SDL_GetError());
+        }
+        
+        //Load jewels.
+        loadJewels();
+        
+        m_soundSwap = Mix_LoadWAV(soundSwap_path.c_str());
+        m_soundCombine = Mix_LoadWAV(soundCombine_path.c_str());
+        
+    }
+}
+
+void Window::start()
+{
+    //Main loop flag
+    bool quit = false;
+    
+    //Event handler
+    SDL_Event e;
+    
+    //Populate grid
+    m_grid.populate();
+    
+    //Draw background and jewels.
+    drawGame();
+    
+    while(!quit)
+    {
+        //Key to consult jewels.
+        pair<int, int> swapper;
+        
+        //indicates when there is a swap
+        bool dropped = false;
+        
+        //Handle events on queue
+        while( SDL_PollEvent( &e ) != 0 )
+        {
+            //User requests quit
+            if( e.type == SDL_QUIT )
             {
-                //User requests quit
-                if( e.type == SDL_QUIT )
+                quit = true;
+            }
+            
+            //int to indicate which jewel to swap.
+            int swap_event = 0;
+            
+            //Handle events in jewels
+            for(int x = 0; x < GRID_SIZE; ++x)
+            {
+                for(int y = 0; y < GRID_SIZE; ++y)
                 {
-                    quit = true;
-                }
-                
-                //int to indicate which jewel to swap.
-                int swap_event = 0;
-                
-                //Handle events in jewels
-                for(int x = 0; x < GRID_SIZE; ++x)
-                {
-                    for(int y = 0; y < GRID_SIZE; ++y)
+                    swapper = make_pair(x, y);
+                    
+                    //Find out which jewel to swap for
+                    swap_event = m_grid[swapper].handleEvent(&e);
+                    
+                    //If jewel has been dragged to swap
+                    if(swap_event != 0)
                     {
-                        swapper = make_pair(x, y);
+                        dropped = false;
                         
-                        //Find out which jewel to swap for
-                        swap_event = m_grid[swapper].handleEvent(&e);
+                        //Carry out swap
+                        swapJewels(swapper, swap_event);
                         
-                        //If jewel has been dragged to swap
-                        if(swap_event != 0)
+                        //If combinations were made, drop jewels
+                        while(m_grid.findCombinations())
                         {
-                            dropped = false;
-                            
-                            //Carry out swap
-                            swapJewels(swapper, swap_event);
-                            
-                            //If combinations were made, drop jewels
-                            while(m_grid.findCombinations())
+                            //Play combination swap.
+                            Mix_PlayChannel(-1, m_soundCombine, 0);
+                            SDL_Delay(100);
+                            dropJewels(false);
+                            SDL_Delay(500);
+                            dropped = true;
+                        }
+                        
+                        //if not dropped, swap back
+                        if(!dropped)
+                        {
+                            //swap_event needs to change to indicate opposite direction.
+                            //Change hardcoded bits?
+                            if(swap_event == 1 || swap_event == 3)
                             {
-                                dropJewels(false);
-                                SDL_Delay(500);
-                                dropped = true;
+                                swapJewels(swapper, ++swap_event);
                             }
-                            
-                            //if not dropped, swap back
-                            if(!dropped)
-                            {
-                                //swap_event needs to change to indicate opposite direction.
-                                //Change hardcoded bits?
-                                if(swap_event == 1 || swap_event == 3)
-                                {
-                                    swapJewels(swapper, ++swap_event);
-                                }
-                                else
-                                {
-                                    swapJewels(swapper, --swap_event);
-                                }
-                            }
-                            //else, spawn new jewels.
                             else
                             {
-                                //Spawn new jewels.
-                                dropJewels(true);
-                                
-                                goto restart;
+                                swapJewels(swapper, --swap_event);
                             }
+                        }
+                        //else, spawn new jewels.
+                        else
+                        {
+                            //Spawn new jewels.
+                            dropJewels(true);
+                            
+                            goto restart;
                         }
                     }
                 }
-                
-                restart:
-                continue;
             }
+            
+            restart:
+            continue;
         }
     }
 }
@@ -135,6 +144,13 @@ void Window::close()
     //Destroy window
     SDL_DestroyWindow(m_window);
     m_window = NULL;
+    
+    //Free sound effects
+    Mix_FreeChunk(m_soundSwap);
+    Mix_FreeChunk(m_soundCombine);
+    
+    //Close the mixer
+    Mix_CloseAudio();
     
     //Quit SDL subsystems
     SDL_Quit();
@@ -171,6 +187,12 @@ bool Window::init()
         {
             //Get window surface
             m_screenSurface = SDL_GetWindowSurface(m_window);
+        }
+        
+        //Initialise sound effects
+        if( Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1 )
+        {
+            output = false;
         }
     }
     
@@ -234,7 +256,7 @@ void Window::loadJewels()
     //Hardcoded.. change.
     for(int i = 1; i < 6; ++i)
     {
-        string path = "Images/Color-" + to_string(i) + ".png";
+        string path = "Files/Color-" + to_string(i) + ".png";
         
         SDL_Surface* jewel = NULL;
         
@@ -406,6 +428,10 @@ void Window::performSwap(const std::pair<int, int> &swapper, const std::pair<int
     indicateSwap(swapper, swapped);
     
     bool render;
+    
+    //play swap sound
+    Mix_PlayChannel(-1, m_soundSwap, 0);
+    SDL_Delay(100);
     
     //while swap needs to be rendered.
     do
