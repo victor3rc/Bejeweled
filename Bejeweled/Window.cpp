@@ -316,32 +316,40 @@ void Window::dropJewels()
 {
     //Find jewels to be dropped.
     auto droppers = m_grid.setDroppers();
-    
+
     bool dropping;
     
-    do
+    //if found no droppers redraw game in case jewels were combined at the top rows (i.e. no droppers)
+    if(droppers.size() == 0)
     {
-        dropping = false;
-        
-        for(auto& jewel : droppers)
+        drawGame();
+    }
+    else
+    {
+        do
         {
-            if(m_grid[jewel].y() != m_grid[jewel].yOrig())
+            dropping = false;
+            
+            for(auto& jewel : droppers)
             {
-                //Adjust coordinates for jewel to drop
-                m_grid[jewel].setPosition(m_grid[jewel].x(), m_grid[jewel].y() + DROP_SPEED);
-                
-                //indicating jewels are dropping
-                dropping = true;
+                if(m_grid[jewel].y() != m_grid[jewel].yOrig())
+                {
+                    //Adjust coordinates for jewel to drop
+                    m_grid[jewel].setPosition(m_grid[jewel].x(), m_grid[jewel].y() + DROP_SPEED);
+                    
+                    //indicating jewels are dropping
+                    dropping = true;
+                }
             }
-        }
-        
-        //Re-render if still dropping.
-        if(dropping)
-        {
-            drawGame();
-        }
-        
-    }while(dropping);
+            
+            //Re-render if still dropping.
+            if(dropping)
+            {
+                drawGame();
+            }
+            
+        }while(dropping);
+    }
 }
 
 void Window::swapJewels(std::pair<int, int>& swapper, const int event)

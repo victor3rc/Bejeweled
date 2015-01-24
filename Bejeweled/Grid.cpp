@@ -111,27 +111,29 @@ vector<pair<int,int>> Grid::setDroppers()
         for(int x = GRID_SIZE-1; x >= 0; --x)
         {
             current = make_pair(x, y);
-            above = make_pair(x-1, y);
             
+            //If jewel is set as vacant
             if(m_grid[current].vacant())
             {
                 int i = 1;
                 
-                //while jewel above is vacant
-                while(m_grid[above].vacant())
+                above = make_pair(x-i, y);
+
+                //while jewel above is not out of the grid and vacant
+                while(x >= 0 && m_grid[above].vacant())
                 {
                     ++i;
                     above = make_pair(x-i, y);
                     
-                    if (x-i >= 0)
+                    //If found a jewel to drop and still inside the grid.
+                    if (!m_grid[above].vacant() && x-i >= 0)
                     {
-                        output.push_back(current);
                         break;
                     }
                 }
                 
-                //If not reached the top row
-                if(x-i >= 0)
+                //If not reached the top row and jewel above is not already vacant
+                if(x-i >= 0 && !m_grid[above].vacant())
                 {
                     //Set position and color of lower jewel to match jewel above.
                     m_grid[current].setPosition(m_grid[above].x(), m_grid[above].y());
