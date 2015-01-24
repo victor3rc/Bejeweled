@@ -41,9 +41,9 @@ void Jewel::setDropTarget(int x, int y)
     m_target.y = y;
 }
 
-void Jewel::setIdentifier(int val)
+void Jewel::setColor(int color)
 {
-    m_id = val;
+    m_color = color;
 }
 
 void Jewel::setVacant(bool vacant)

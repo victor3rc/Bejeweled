@@ -23,7 +23,7 @@ Window::Window()
     {
         string background_path = "Files/Backdrop13.jpg";
         string soundSwap_path = "Files/woosh.wav";
-        string soundCombine_path = "Files/grenade.wav";
+        string soundCombine_path = "Files/blop.wav";
         
         //Load background image.
         if(!loadImage(&m_background, background_path.c_str()))
@@ -224,14 +224,14 @@ void Window::applyJewels()
             {
                 if(jewel.first.first >= 0)
                 {
-                    applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.value()], m_screenSurface);
+                    applySurface(jewel.second.x(), jewel.second.y(), m_jewels[jewel.second.color()], m_screenSurface);
                 }
             }
         }
     }
     
     //apply jewel to appear on top of all other jewels last.
-    applySurface(grid[m_top_jewel].x(), grid[m_top_jewel].y(), m_jewels[grid[m_top_jewel].value()], m_screenSurface);
+    applySurface(grid[m_top_jewel].x(), grid[m_top_jewel].y(), m_jewels[grid[m_top_jewel].color()], m_screenSurface);
 }
 
 bool Window::loadImage(SDL_Surface** obj, const string& path)
@@ -324,9 +324,9 @@ bool Window::swapAnimation(pair<int, int> jewel)
 void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
 {
     //swap jewel colors.
-    int tempColor = m_grid[lower].value();
-    m_grid[lower].setIdentifier(m_grid[higher].value());
-    m_grid[higher].setIdentifier(tempColor);
+    int tempColor = m_grid[lower].color();
+    m_grid[lower].setColor(m_grid[higher].color());
+    m_grid[higher].setColor(tempColor);
     
     //Indicate they are not being dragged any longer.
     m_grid[lower].stopDragging();

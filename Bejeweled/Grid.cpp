@@ -53,7 +53,7 @@ void Grid::populate()
             
             //Create jewel and set its id.
             Jewel jewel(coord_x, coord_y);
-            jewel.setIdentifier(id);
+            jewel.setColor(id);
             
             //Add jewel to grid.
             m_grid.insert(make_pair(key, jewel));
@@ -137,7 +137,7 @@ vector<pair<int,int>> Grid::setDroppers()
                 {
                     //Set position and color of lower jewel to match jewel above.
                     m_grid[current].setPosition(m_grid[above].x(), m_grid[above].y());
-                    m_grid[current].setIdentifier(m_grid[above].value());
+                    m_grid[current].setColor(m_grid[above].color());
                     
                     //set jewel to drop.
                     m_grid[above].setVacant(true);
@@ -149,7 +149,7 @@ vector<pair<int,int>> Grid::setDroppers()
                 else
                 {
                     //Indicate empty space at the top
-                    m_grid[current].setIdentifier(-1);
+                    m_grid[current].setColor(-1);
                 }
             }
         }
@@ -195,11 +195,11 @@ vector<pair<int,int>> Grid::spawn()
                 m_grid[current].setPosition(m_grid[current].x(), 0);
                 
                 //Find color to spawn.
-                m_grid[current].setIdentifier(rand() % 5);
+                m_grid[current].setColor(rand() % 5);
             
                 while (matchAround(current))
                 {
-                    m_grid[current].setIdentifier(rand() % 5);
+                    m_grid[current].setColor(rand() % 5);
                 }
                 
                 //Not vacant any longer.
@@ -235,7 +235,7 @@ bool Grid::verify(int x, int y, int id)
         adjacent1 = make_pair(x-1, y);
         adjacent2 = make_pair(x-2, y);
 
-        if(m_grid[adjacent1].value() == id && m_grid[adjacent2].value() == id)
+        if(m_grid[adjacent1].color() == id && m_grid[adjacent2].color() == id)
         {
             return false;
         }
@@ -248,7 +248,7 @@ bool Grid::verify(int x, int y, int id)
         adjacent1 = make_pair(x, y-1);
         adjacent2 = make_pair(x, y-2);
         
-        if(m_grid[adjacent1].value() == id && m_grid[adjacent2].value() == id)
+        if(m_grid[adjacent1].color() == id && m_grid[adjacent2].color() == id)
         {
             return false;
         }
@@ -317,7 +317,7 @@ void Grid::dropAbove(pair<int, int> current)
 bool Grid::matchAround(const std::pair<int, int>& key)
 {
     //color of jewel.
-    int color = m_grid[key].value();
+    int color = m_grid[key].color();
     
     //keys to adjacent jewels to check combinations for.
     pair<int,int> adjacent1, adjacent2;
@@ -329,7 +329,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         adjacent1 = make_pair(key.first, key.second-1);
         adjacent2 = make_pair(key.first, key.second+1);
         
-        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return true;
         }
@@ -343,7 +343,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         adjacent2 = make_pair(key.first, key.second-2);
         
         //Jewel given is the one in the middle of combination
-        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return true;
         }
@@ -357,7 +357,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         adjacent2 = make_pair(key.first, key.second+2);
         
         //Jewel given is the one in the middle of combination
-        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return true;
         }
@@ -370,7 +370,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         adjacent1 = make_pair(key.first-1, key.second);
         adjacent2 = make_pair(key.first+1, key.second);
         
-        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return true;
         }
@@ -384,7 +384,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         adjacent2 = make_pair(key.first-2, key.second);
         
         //Jewel given is the one in the middle of combination
-        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return true;
         }
@@ -398,7 +398,7 @@ bool Grid::matchAround(const std::pair<int, int>& key)
         adjacent2 = make_pair(key.first+2, key.second);
         
         //Jewel given is the one in the middle of combination
-        if(m_grid[adjacent1].value() == color && m_grid[adjacent2].value() == color)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return true;
         }

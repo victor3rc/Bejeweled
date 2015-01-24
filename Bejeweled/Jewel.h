@@ -39,6 +39,16 @@ const int BOTTOM_ROW = SCREEN_HEIGHT-TOP_ROW-JEWEL_HEIGHT;
 class Jewel
 {
 public:
+    
+    enum COLOR
+    {
+        BLACK,
+        GREY,
+        PINK,
+        BLUE,
+        ORANGE
+    };
+    
     //Initializes internal variables
     Jewel(int x, int y);
     Jewel();
@@ -56,7 +66,7 @@ public:
     const int& yTarget() { return m_target.y; };
     
     //Return jewel identifier value.
-    const int& value() { return m_id; };
+    const int& color() { return m_color; };
     
     //Return bool indicating if space vacant.
     const bool& vacant() { return m_vacant; };
@@ -71,7 +81,7 @@ public:
     void setDropTarget(int x, int y);
     
     //Sets jewel identifier value.
-    void setIdentifier(int val);
+    void setColor(int color);
     
     //Sets jewel to indicate if its space has been left blank.
     void setVacant(bool vacant);
@@ -103,7 +113,7 @@ private:
     
     //Jewel identifier value. Indicates jewel color
     //1 - Black, 2 - Gray, 3 - pink, 4 - Blue, 5 - orange, 0 - no jewel
-    int m_id;
+    int m_color;
     
     //'m_drag' bool to indicated whether jewel is being clicked on.
     //'m_vacant' indicates if jewel space has been left vacant
