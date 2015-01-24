@@ -62,7 +62,8 @@ private:
     void indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher);
     
     //Function used to update jewels after combination.
-    void dropJewels();
+    //'spawn' indicating if jewels have just been spawned.
+    void dropJewels(bool spawn);
     
     void swapJewels(std::pair<int,int>& swapper, const int event);
     

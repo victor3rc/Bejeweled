@@ -68,9 +68,9 @@ void Window::start()
                 int swap_event = 0;
                 
                 //Handle events in jewels
-                for(int x = 0; x < m_grid.size(); ++x)
+                for(int x = 0; x < GRID_SIZE; ++x)
                 {
-                    for(int y = 0; y < m_grid.size(); ++y)
+                    for(int y = 0; y < GRID_SIZE; ++y)
                     {
                         swapper = make_pair(x, y);
                         
@@ -88,7 +88,7 @@ void Window::start()
                             //If combinations were made, drop jewels
                             while(m_grid.findCombinations())
                             {
-                                dropJewels();
+                                dropJewels(false);
                                 SDL_Delay(500);
                                 dropped = true;
                             }
@@ -107,9 +107,12 @@ void Window::start()
                                     swapJewels(swapper, --swap_event);
                                 }
                             }
-                            //else, swap back
+                            //else, spawn new jewels.
                             else
                             {
+                                //Spawn new jewels.
+                                dropJewels(true);
+                                
                                 goto restart;
                             }
                         }
@@ -312,10 +315,19 @@ void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
     m_grid[higher].setPosition(m_grid[lower].xOrig(), m_grid[lower].yOrig());
 }
 
-void Window::dropJewels()
+void Window::dropJewels(bool spawn)
 {
     //Find jewels to be dropped.
-    auto droppers = m_grid.setDroppers();
+    vector<pair<int,int>> droppers;
+    
+    if(spawn)
+    {
+        droppers = m_grid.spawn();
+    }
+    else
+    {
+        droppers = m_grid.setDroppers();
+    }
 
     bool dropping;
     
@@ -332,7 +344,7 @@ void Window::dropJewels()
             
             for(auto& jewel : droppers)
             {
-                if(m_grid[jewel].y() != m_grid[jewel].yOrig())
+                if(m_grid[jewel].y() < m_grid[jewel].yOrig())
                 {
                     //Adjust coordinates for jewel to drop
                     m_grid[jewel].setPosition(m_grid[jewel].x(), m_grid[jewel].y() + DROP_SPEED);

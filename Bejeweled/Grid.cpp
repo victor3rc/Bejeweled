@@ -171,6 +171,51 @@ void Grid::moveJewel(const pair<int,int>& moved, const pair<int,int>& space)
     m_grid[space].setDrop(false, 0);
 }
 
+vector<pair<int,int>> Grid::spawn()
+{
+    //vector containing jewels to be spawned.
+    vector<pair<int,int>> output;
+    
+    //key for jewel being looked at.
+    pair<int,int> current;
+    
+    //Cycle through jewels in grid, through columns.
+    for(int y = 0; y < GRID_SIZE; ++y)
+    {
+        for(int x = 0; x < GRID_SIZE; ++x)
+        {
+            current = make_pair(x, y);
+            
+            if(m_grid[current].vacant())
+            {
+                //Indicate current jewel is being spawned;
+                output.push_back(current);
+                
+                //Move jewel to spawning position.
+                m_grid[current].setPosition(m_grid[current].x(), 0);
+                
+                //Find color to spawn.
+                m_grid[current].setIdentifier(rand() % 5);
+            
+                while (matchAround(current))
+                {
+                    m_grid[current].setIdentifier(rand() % 5);
+                }
+                
+                //Not vacant any longer.
+                m_grid[current].setVacant(false);
+            }
+            else
+            {
+                //proceed to next column when found a non-vacant jewel spot
+                break;
+            }
+        }
+    }
+    
+    return output;
+}
+
 Jewel& Grid::operator[](const pair<int, int>& key)
 {
     return m_grid[key];
@@ -181,17 +226,16 @@ bool Grid::verify(int x, int y, int id)
     //return flag.
     bool output = true;
     
+    pair<int,int> adjacent1, adjacent2;
+    
     //check jewels to the left aren't the same
     if(x > 1)
     {
-        //jewels to check
-        pair<int,int> left1, left2;
-
         //grab their value
-        left1 = make_pair(x-1, y);
-        left2 = make_pair(x-2, y);
+        adjacent1 = make_pair(x-1, y);
+        adjacent2 = make_pair(x-2, y);
 
-        if(m_grid[left1].value() == id && m_grid[left2].value() == id)
+        if(m_grid[adjacent1].value() == id && m_grid[adjacent2].value() == id)
         {
             return false;
         }
@@ -200,14 +244,11 @@ bool Grid::verify(int x, int y, int id)
     //check jewels above aren't the same
     if(y > 1)
     {
-        //jewels to check
-        pair<int,int> above1, above2;
-        
         //grab their value
-        above1 = make_pair(x, y-1);
-        above2 = make_pair(x, y-2);
+        adjacent1 = make_pair(x, y-1);
+        adjacent2 = make_pair(x, y-2);
         
-        if(m_grid[above1].value() == id && m_grid[above2].value() == id)
+        if(m_grid[adjacent1].value() == id && m_grid[adjacent2].value() == id)
         {
             return false;
         }

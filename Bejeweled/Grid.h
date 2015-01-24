@@ -40,6 +40,9 @@ public:
     //'space' is key to space to be moved into.
     void moveJewel(const std::pair<int,int>& moved, const std::pair<int,int>& space);
     
+    //Replace jewels combined with new jewels.
+    std::vector<std::pair<int,int>> spawn();
+    
     //Returns grid size.
     const int size() { return GRID_SIZE; };
     
