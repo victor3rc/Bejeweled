@@ -39,16 +39,6 @@ const int BOTTOM_ROW = SCREEN_HEIGHT-TOP_ROW-JEWEL_HEIGHT;
 class Jewel
 {
 public:
-    
-    enum COLOR
-    {
-        BLACK,
-        GREY,
-        PINK,
-        BLUE,
-        ORANGE
-    };
-    
     //Initializes internal variables
     Jewel(int x, int y);
     Jewel();

@@ -63,10 +63,6 @@ private:
     //'x_axis' indicates if jewels to combine are in x-axis (true) or y-axis (false).
     void combine(const std::pair<int,int>& key, int lower, int higher, bool x_axis);
     
-    //Check if jewels jewel given need to be dropped also.
-    //'current' is key to jewel which check will be carried on.
-    void dropAbove(std::pair<int, int> current);
-    
     //Checks jewels around jewel given, to see if there is a combination.
     //'key' is jewel indicating jewel to check for.
     bool matchAround(const std::pair<int,int>& key);

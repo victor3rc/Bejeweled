@@ -57,7 +57,7 @@ void Grid::populate()
             
             //Add jewel to grid.
             m_grid.insert(make_pair(key, jewel));
-           
+            
             //add cushion to coordinates.
             coord_x += JEWEL_WIDTH + CUSHION;
         }
@@ -81,7 +81,7 @@ bool Grid::findCombinations()
         for(int y = 0; y < GRID_SIZE; ++y)
         {
             current = make_pair(x, y);
-    
+            
             //if jewel is part of a combination.
             if(matchAround(current) && !m_grid[current].vacant())
             {
@@ -118,7 +118,7 @@ vector<pair<int,int>> Grid::setDroppers()
                 int i = 1;
                 
                 above = make_pair(x-i, y);
-
+                
                 //while jewel above is not out of the grid and vacant
                 while(x >= 0 && m_grid[above].vacant())
                 {
@@ -154,7 +154,7 @@ vector<pair<int,int>> Grid::setDroppers()
             }
         }
     }
-   
+    
     return output;
 }
 
@@ -196,7 +196,7 @@ vector<pair<int,int>> Grid::spawn()
                 
                 //Find color to spawn.
                 m_grid[current].setColor(rand() % 5);
-            
+                
                 while (matchAround(current))
                 {
                     m_grid[current].setColor(rand() % 5);
@@ -234,7 +234,7 @@ bool Grid::verify(int x, int y, int id)
         //grab their value
         adjacent1 = make_pair(x-1, y);
         adjacent2 = make_pair(x-2, y);
-
+        
         if(m_grid[adjacent1].color() == id && m_grid[adjacent2].color() == id)
         {
             return false;
@@ -295,23 +295,6 @@ void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
         //Erase jewel
         m_grid[adjacent].setVacant(true);
     }
-}
-
-void Grid::dropAbove(pair<int, int> current)
-{
-//    pair<int,int> above;
-//    
-//    while(current.first >= 0)
-//    {
-//        above = make_pair(current.first - 1, current.second);
-//        
-//        //Set jewel above to drop. Set its drop target also.
-//        m_grid[above].setDrop(true);
-//        m_grid[above].setDropTarget(m_grid[current].xTarget(),
-//                                    m_grid[current].yTarget() - JEWEL_HEIGHT - CUSHION);
-//        
-//        --current.first;
-//    }
 }
 
 bool Grid::matchAround(const std::pair<int, int>& key)

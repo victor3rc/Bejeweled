@@ -14,6 +14,7 @@
 		F218771D1A67CF3F00D02519 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F218771B1A67CF3F00D02519 /* Window.cpp */; };
 		F218771F1A67EC8F00D02519 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F218771E1A67EC8F00D02519 /* SDL2_image.framework */; };
 		F221D0981A7404970020EB75 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F221D0971A7404970020EB75 /* SDL2_mixer.framework */; };
+		F2B2ADEB1A754FFE0071AD4C /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2B2ADEA1A754FFE0071AD4C /* CoreFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +41,8 @@
 		F218771C1A67CF3F00D02519 /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
 		F218771E1A67EC8F00D02519 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		F221D0971A7404970020EB75 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
+		F2B2AD791A74EAE90071AD4C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		F2B2ADEA1A754FFE0071AD4C /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2B2ADEB1A754FFE0071AD4C /* CoreFoundation.framework in Frameworks */,
 				F218771A1A6720CE00D02519 /* SDL2.framework in Frameworks */,
 				F218771F1A67EC8F00D02519 /* SDL2_image.framework in Frameworks */,
 				F221D0981A7404970020EB75 /* SDL2_mixer.framework in Frameworks */,
@@ -59,10 +63,12 @@
 		F21877061A670F3100D02519 = {
 			isa = PBXGroup;
 			children = (
+				F2B2ADEA1A754FFE0071AD4C /* CoreFoundation.framework */,
 				F221D0971A7404970020EB75 /* SDL2_mixer.framework */,
 				F218771E1A67EC8F00D02519 /* SDL2_image.framework */,
 				F21877191A6720CE00D02519 /* SDL2.framework */,
 				F21877111A670F3100D02519 /* Bejeweled */,
+				F2B2AD781A74EAE90071AD4C /* Beje */,
 				F21877101A670F3100D02519 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,6 +93,14 @@
 				F21780BC1A6ACD65006E4109 /* Jewel.h */,
 			);
 			path = Bejeweled;
+			sourceTree = "<group>";
+		};
+		F2B2AD781A74EAE90071AD4C /* Beje */ = {
+			isa = PBXGroup;
+			children = (
+				F2B2AD791A74EAE90071AD4C /* main.cpp */,
+			);
+			path = Beje;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -232,6 +246,9 @@
 		F21877171A670F3100D02519 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -248,6 +265,8 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/Library/Frameworks/SDL2.framework/Headers,
 				);
+				INSTALL_PATH = /creations;
+				MACH_O_TYPE = mh_execute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -255,6 +274,9 @@
 		F21877181A670F3100D02519 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -270,6 +292,9 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
+				"INFOPLIST_FILE[sdk=*]" = "";
+				"INSTALL_PATH[sdk=*]" = /creations;
+				MACH_O_TYPE = mh_execute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

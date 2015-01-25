@@ -82,6 +82,8 @@ private:
     //Sound effects
     Mix_Chunk* m_soundSwap = NULL;
     Mix_Chunk* m_soundCombine = NULL;
+    Mix_Chunk* m_soundSpawn = NULL;
+    Mix_Chunk* m_soundNoSwap = NULL;
     
     //The 1st jewel
     std::vector<SDL_Surface*> m_jewels;

@@ -7,6 +7,7 @@
 //
 #include <stdio.h>
 #include <SDL_image.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 #include "Window.h"
 
@@ -21,27 +22,50 @@ Window::Window()
     }
     else
     {
-        string background_path = "Files/Backdrop13.jpg";
-        string soundSwap_path = "Files/woosh.wav";
-        string soundCombine_path = "Files/blop.wav";
+        CFURLRef appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("Backdrop13"), CFSTR("jpg"), NULL);
+        CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
+        const char* background = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+        
+        appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("woosh"), CFSTR("wav"), NULL);
+        filePathRef = CFURLCopyPath(appUrlRef);
+        const char* swap = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+        
+        appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("blop"), CFSTR("wav"), NULL);
+        filePathRef = CFURLCopyPath(appUrlRef);
+        const char* combine = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+        
+        appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("bubble"), CFSTR("wav"), NULL);
+        filePathRef = CFURLCopyPath(appUrlRef);
+        const char* spawn = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+        
+        appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("boo"), CFSTR("wav"), NULL);
+        filePathRef = CFURLCopyPath(appUrlRef);
+        const char* noSwap = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
         
         //Load background image.
-        if(!loadImage(&m_background, background_path.c_str()))
+        if(!loadImage(&m_background, background))
         {
-            printf("Cannot load image %s! SDL Error: %s\n", background_path.c_str(), SDL_GetError());
+            printf("Cannot load image %s! SDL Error: %s\n", background, SDL_GetError());
         }
         
         //Load jewels.
         loadJewels();
         
-        m_soundSwap = Mix_LoadWAV(soundSwap_path.c_str());
-        m_soundCombine = Mix_LoadWAV(soundCombine_path.c_str());
+        //Load sound effects
+        m_soundSwap = Mix_LoadWAV(swap);
+        m_soundCombine = Mix_LoadWAV(combine);
+        m_soundSpawn = Mix_LoadWAV(spawn);
+        m_soundNoSwap = Mix_LoadWAV(noSwap);
         
+        // Release references
+        CFRelease(filePathRef);
+        CFRelease(appUrlRef);
     }
 }
 
 void Window::start()
 {
+    
     //Main loop flag
     bool quit = false;
     
@@ -98,14 +122,19 @@ void Window::start()
                             //Play combination swap.
                             Mix_PlayChannel(-1, m_soundCombine, 0);
                             SDL_Delay(100);
+                            
                             dropJewels(false);
                             SDL_Delay(500);
+                            
                             dropped = true;
                         }
                         
                         //if not dropped, swap back
                         if(!dropped)
                         {
+                            //Play no swap sound.
+                            Mix_PlayChannel(-1, m_soundNoSwap, 0);
+                            
                             //swap_event needs to change to indicate opposite direction.
                             //Change hardcoded bits?
                             if(swap_event == 1 || swap_event == 3)
@@ -120,6 +149,8 @@ void Window::start()
                         //else, spawn new jewels.
                         else
                         {
+                            Mix_PlayChannel(-1, m_soundSpawn, 0);
+                            
                             //Spawn new jewels.
                             dropJewels(true);
                             
@@ -129,7 +160,7 @@ void Window::start()
                 }
             }
             
-            restart:
+        restart:
             continue;
         }
     }
@@ -148,6 +179,7 @@ void Window::close()
     //Free sound effects
     Mix_FreeChunk(m_soundSwap);
     Mix_FreeChunk(m_soundCombine);
+    Mix_FreeChunk(m_soundSpawn);
     
     //Close the mixer
     Mix_CloseAudio();
@@ -253,10 +285,16 @@ bool Window::loadImage(SDL_Surface** obj, const string& path)
 
 void Window::loadJewels()
 {
+    CFURLRef appUrlRef;
+    CFStringRef filePathRef;
+    
     //Hardcoded.. change.
     for(int i = 1; i < 6; ++i)
     {
-        string path = "Files/Color-" + to_string(i) + ".png";
+        CFStringRef relativePath = CFStringCreateWithFormat(NULL, NULL, CFSTR("Color-%d"), i);
+        appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), relativePath, CFSTR("png"), NULL);
+        filePathRef = CFURLCopyPath(appUrlRef);
+        string path = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
         
         SDL_Surface* jewel = NULL;
         
@@ -268,6 +306,10 @@ void Window::loadJewels()
             printf("Cannot load image %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
         }
     }
+    
+    // Release references
+    CFRelease(filePathRef);
+    CFRelease(appUrlRef);
 }
 
 void Window::drawGame()
@@ -281,7 +323,7 @@ void Window::drawGame()
     //Update the surface
     SDL_UpdateWindowSurface(m_window);
 }
-    
+
 bool Window::swapAnimation(pair<int, int> jewel)
 {
     //Original fixed coordinates of jewel doing the swapping.
@@ -317,7 +359,7 @@ bool Window::swapAnimation(pair<int, int> jewel)
         
         output = true;
     }
- 
+    
     return output;
 }
 
@@ -350,7 +392,7 @@ void Window::dropJewels(bool spawn)
     {
         droppers = m_grid.setDroppers();
     }
-
+    
     bool dropping;
     
     //if found no droppers redraw game in case jewels were combined at the top rows (i.e. no droppers)
