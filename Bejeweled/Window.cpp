@@ -65,10 +65,6 @@ Window::Window()
 
 void Window::start()
 {
-    
-    //Main loop flag
-    bool quit = false;
-    
     //Event handler
     SDL_Event e;
     
@@ -78,108 +74,115 @@ void Window::start()
     //Draw background and jewels.
     drawGame();
     
-    while(!quit)
+    //Key to consult jewels.
+    pair<int, int> swapper;
+    
+    //indicates when there is a swap
+    bool dropped = false;
+    
+    //Handle events on queue
+    while(SDL_WaitEvent(&e) != 0)
     {
-        //Key to consult jewels.
-        pair<int, int> swapper;
-        
-        //indicates when there is a swap
-        bool dropped = false;
-        
-        //Handle events on queue
-        while( SDL_PollEvent( &e ) != 0 )
+        //User requests quit
+        if( e.type == SDL_QUIT )
         {
-            //User requests quit
-            if( e.type == SDL_QUIT )
+            break;
+        }
+        
+        //int to indicate which jewel to swap.
+        int swap_event = 0;
+        
+        //Handle events in jewels
+        for(int x = 0; x < GRID_SIZE; ++x)
+        {
+            for(int y = 0; y < GRID_SIZE; ++y)
             {
-                quit = true;
-            }
-            
-            //int to indicate which jewel to swap.
-            int swap_event = 0;
-            
-            //Handle events in jewels
-            for(int x = 0; x < GRID_SIZE; ++x)
-            {
-                for(int y = 0; y < GRID_SIZE; ++y)
+                swapper = make_pair(x, y);
+                
+                //Find out which jewel to swap for
+                swap_event = m_grid[swapper].handleEvent(&e);
+                
+                //If jewel has been dragged to swap
+                if(swap_event != 0)
                 {
-                    swapper = make_pair(x, y);
+                    dropped = false;
                     
-                    //Find out which jewel to swap for
-                    swap_event = m_grid[swapper].handleEvent(&e);
+                    //Carry out swap
+                    swapJewels(swapper, swap_event);
                     
-                    //If jewel has been dragged to swap
-                    if(swap_event != 0)
+                    //If combinations were made, drop jewels
+                    while(m_grid.findCombinations())
                     {
-                        dropped = false;
+                        //Flicker jewels before disappearing.
+                        flicker();
                         
-                        //Carry out swap
-                        swapJewels(swapper, swap_event);
+                        //Play combination swap.
+                        Mix_PlayChannel(-1, m_soundCombine, 0);
+                        SDL_Delay(100);
                         
-                        //If combinations were made, drop jewels
-                        while(m_grid.findCombinations())
+                        dropJewels(false);
+                        SDL_Delay(500);
+                        
+                        dropped = true;
+                    }
+                    
+                    //if not dropped, swap back
+                    if(!dropped)
+                    {
+                        //Play no swap sound.
+                        Mix_PlayChannel(-1, m_soundNoSwap, 0);
+                        
+                        //swap_event needs to change to indicate opposite direction.
+                        //Change hardcoded bits?
+                        if(swap_event == 1 || swap_event == 3)
                         {
-                            //Play combination swap.
-                            Mix_PlayChannel(-1, m_soundCombine, 0);
-                            SDL_Delay(100);
-                            
-                            dropJewels(false);
-                            SDL_Delay(500);
-                            
-                            dropped = true;
+                            swapJewels(swapper, ++swap_event);
                         }
-                        
-                        //if not dropped, swap back
-                        if(!dropped)
-                        {
-                            //Play no swap sound.
-                            Mix_PlayChannel(-1, m_soundNoSwap, 0);
-                            
-                            //swap_event needs to change to indicate opposite direction.
-                            //Change hardcoded bits?
-                            if(swap_event == 1 || swap_event == 3)
-                            {
-                                swapJewels(swapper, ++swap_event);
-                            }
-                            else
-                            {
-                                swapJewels(swapper, --swap_event);
-                            }
-                        }
-                        //else, spawn new jewels.
                         else
                         {
-                            Mix_PlayChannel(-1, m_soundSpawn, 0);
-                            
-                            //Spawn new jewels.
-                            dropJewels(true);
-                            
-                            goto restart;
+                            swapJewels(swapper, --swap_event);
                         }
+                    }
+                    //else, spawn new jewels.
+                    else
+                    {
+                        Mix_PlayChannel(-1, m_soundSpawn, 0);
+                        
+                        //Spawn new jewels.
+                        dropJewels(true);
                     }
                 }
             }
-            
-        restart:
-            continue;
         }
     }
 }
 
 void Window::close()
 {
-    //Deallocate surface
+    //Deallocate background;
     SDL_FreeSurface(m_background);
     m_background = NULL;
     
-    //Destroy window
-    SDL_DestroyWindow(m_window);
-    m_window = NULL;
+    //Deallocate screen
+    SDL_FreeSurface(m_screenSurface);
+    m_screenSurface = NULL;
+    
+    //deallocate jewels
+    for(auto& jewel : m_jewels)
+    {
+        SDL_FreeSurface(jewel);
+        jewel = NULL;
+    }
     
     //Free sound effects
     Mix_FreeChunk(m_soundSwap);
     Mix_FreeChunk(m_soundCombine);
     Mix_FreeChunk(m_soundSpawn);
+    Mix_FreeChunk(m_soundNoSwap);
+    
+    //Destroy window
+    SDL_DestroyWindow(m_window);
+    m_window = NULL;
     
     //Close the mixer
     Mix_CloseAudio();
@@ -495,7 +498,57 @@ void Window::performSwap(const std::pair<int, int> &swapper, const std::pair<int
     }while(render);
 }
 
-
+void Window::flicker()
+{
+    //jewel being analysed.
+    pair<int,int> current;
+    
+    //jewels in grid to be flickered.
+    vector<pair<int,int>> flickered;
+    
+    //Cycle through jewels to find the ones meant to be flickered.
+    for(int x = 0; x < GRID_SIZE; ++x)
+    {
+        for(int y = 0; y < GRID_SIZE; ++y)
+        {
+            current = make_pair(x, y);
+            
+            if(m_grid[current].vacant())
+            {
+                flickered.push_back(current);
+            }
+        }
+    }
+    
+    //Flicker jewels selected
+    for(int i = 0; i < FLICKER; ++i)
+    {
+        for(auto& jewel : flickered)
+        {
+            if(m_grid[jewel].vacant())
+            {
+                m_grid[jewel].setVacant(false);
+            }
+            else
+            {
+                m_grid[jewel].setVacant(true);
+            }
+        }
+        
+        //Re-render after each flick.
+        drawGame();
+        SDL_Delay(50);
+    }
+    
+    //Reset jewels
+    for(auto& jewel : flickered)
+    {
+        if(!m_grid[jewel].vacant())
+        {
+            m_grid[jewel].setVacant(true);
+        }
+    }
+}
 
 
 

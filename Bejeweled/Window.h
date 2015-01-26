@@ -70,6 +70,9 @@ private:
     
     void performSwap(const std::pair<int,int>& swapper, const std::pair<int,int>& swapped);
     
+    //Flicker jewels which have been combined before substituting them.
+    void flicker();
+    
     //The window.
     SDL_Window* m_window;
     

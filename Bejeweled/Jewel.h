@@ -23,10 +23,13 @@ const int DROP_SPEED = 2;
 //Screen dimension constants
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
-const int CUSHION = 10;
 
+//Jewel constants.
 const int JEWEL_WIDTH = 70;
 const int JEWEL_HEIGHT = 70;
+const int CUSHION = 10;
+
+const int FLICKER = 8; //Flickering frequency
 const int SWAP_SCOPE = 20; //Distance in pixels mouse has to be dragged to activate swap.
 
 //Jewel limit positions
