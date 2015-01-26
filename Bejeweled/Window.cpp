@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Victor Cardozo. All rights reserved.
 //
 #include <stdio.h>
+#include <SDL2/SDL.h>
 #include <SDL_image.h>
-#include <CoreFoundation/CoreFoundation.h>
 
 #include "Window.h"
 
@@ -42,24 +42,32 @@ Window::Window()
         filePathRef = CFURLCopyPath(appUrlRef);
         const char* noSwap = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
         
+        appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("start"), CFSTR("wav"), NULL);
+        filePathRef = CFURLCopyPath(appUrlRef);
+        const char* start = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+        
         //Load background image.
         if(!loadImage(&m_background, background))
         {
             printf("Cannot load image %s! SDL Error: %s\n", background, SDL_GetError());
         }
         
-        //Load jewels.
+        //Load jewel images
         loadJewels();
         
-        //Load sound effects
+        //Load sound effect files
         m_soundSwap = Mix_LoadWAV(swap);
         m_soundCombine = Mix_LoadWAV(combine);
         m_soundSpawn = Mix_LoadWAV(spawn);
         m_soundNoSwap = Mix_LoadWAV(noSwap);
+        m_soundStart = Mix_LoadWAV(start);
         
         // Release references
         CFRelease(filePathRef);
         CFRelease(appUrlRef);
+        
+        //initialise top jewel
+        m_top_jewel = make_pair(0, 0);
     }
 }
 
@@ -71,8 +79,8 @@ void Window::start()
     //Populate grid
     m_grid.populate();
     
-    //Initialise background and jewels on screen.
-    initialDrop();
+    //Initialise window animation.
+    initialAnimation();
     
     //Key to consult jewels.
     pair<int, int> swapper;
@@ -114,13 +122,13 @@ void Window::start()
                     while(m_grid.findCombinations())
                     {
                         //Flicker jewels before disappearing.
-                        flicker();
+                        flickerAnimation();
                         
                         //Play combination swap.
                         Mix_PlayChannel(-1, m_soundCombine, 0);
                         SDL_Delay(100);
                         
-                        dropJewels(false);
+                        dropAnimation(false);
                         SDL_Delay(500);
                         
                         dropped = true;
@@ -149,7 +157,7 @@ void Window::start()
                         Mix_PlayChannel(-1, m_soundSpawn, 0);
                         
                         //Spawn new jewels.
-                        dropJewels(true);
+                        dropAnimation(true);
                     }
                 }
             }
@@ -179,6 +187,7 @@ void Window::close()
     Mix_FreeChunk(m_soundCombine);
     Mix_FreeChunk(m_soundSpawn);
     Mix_FreeChunk(m_soundNoSwap);
+    Mix_FreeChunk(m_soundStart);
     
     //Destroy window
     SDL_DestroyWindow(m_window);
@@ -197,7 +206,7 @@ bool Window::init()
     bool output = true;
     
     //Initialize SDL
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
     {
         printf( "SDL could not initialize window: %s\n", SDL_GetError() );
         output = false;
@@ -211,7 +220,7 @@ bool Window::init()
         }
         
         //Create window
-        m_window = SDL_CreateWindow( "Bejeweled", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+        m_window = SDL_CreateWindow( "Jewel Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
         
         if( m_window == NULL )
         {
@@ -228,6 +237,17 @@ bool Window::init()
         if( Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1 )
         {
             output = false;
+        }
+    }
+    
+    SDL_Event e;
+    
+    //Ensure window is being displayed
+    while(SDL_PollEvent(&e))
+    {
+        if(e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_SHOWN)
+        {
+            break;
         }
     }
     
@@ -267,6 +287,18 @@ void Window::applyJewels()
     
     //apply jewel to appear on top of all other jewels last.
     applySurface(grid[m_top_jewel].x(), grid[m_top_jewel].y(), m_jewels[grid[m_top_jewel].color()], m_screenSurface);
+}
+
+void Window::drawGame()
+{
+    //Add background image
+    applySurface(0, 0, m_background, m_screenSurface);
+    
+    //Add jewels to screen surface.
+    applyJewels();
+    
+    //Update the surface
+    SDL_UpdateWindowSurface(m_window);
 }
 
 bool Window::loadImage(SDL_Surface** obj, const string& path)
@@ -315,16 +347,131 @@ void Window::loadJewels()
     CFRelease(appUrlRef);
 }
 
-void Window::drawGame()
+void Window::swapJewels(std::pair<int, int>& swapper, const int event)
 {
-    //Add background image
-    applySurface(0, 0, m_background, m_screenSurface);
+    pair<int,int> swapped;
     
-    //Add jewels to screen surface.
-    applyJewels();
+    //swap jewels in grid.
+    //update m_position.
+    switch(event)
+    {
+        case 1:
+            //Swap left.
+            swapped = make_pair(swapper.first, swapper.second-1);
+            break;
+        case 2:
+            //Swap right.
+            swapped = make_pair(swapper.first, swapper.second+1);
+            break;
+        case 3:
+            //Swap above.
+            swapped = make_pair(swapper.first-1, swapper.second);
+            break;
+        case 4:
+            //Swap below
+            swapped = make_pair(swapper.first+1, swapper.second);
+            break;
+    }
     
-    //Update the surface
-    SDL_UpdateWindowSurface(m_window);
+    performSwap(swapped, swapper);
+    
+    //Set jewel clicked on as top jewel.
+    m_top_jewel = swapper;
+    
+    //Update swapper to indicate where its jewel is on the grid.
+    swapper.first = swapped.first;
+    swapper.second = swapped.second;
+}
+
+void Window::performSwap(const std::pair<int, int> &swapper, const std::pair<int, int> &swapped)
+{
+    //swap jewels in grid, updating current position.
+    gridSwap(swapper, swapped);
+    
+    bool render;
+    
+    //play swap sound
+    Mix_PlayChannel(-1, m_soundSwap, 0);
+    SDL_Delay(100);
+    
+    //while swap needs to be rendered.
+    do
+    {
+        drawGame();
+        
+        render = false;
+        
+        if(swapAnimation(swapper))
+        {
+            render = true;
+        }
+        
+        if(swapAnimation(swapped))
+        {
+            render = true;
+        }
+        
+    }while(render);
+}
+
+void Window::gridSwap(std::pair<int, int> lower, std::pair<int, int> higher)
+{
+    //swap jewel colors.
+    int tempColor = m_grid[lower].color();
+    m_grid[lower].setColor(m_grid[higher].color());
+    m_grid[higher].setColor(tempColor);
+    
+    //Indicate they are not being dragged any longer.
+    m_grid[lower].stopDragging();
+    m_grid[higher].stopDragging();
+    
+    //indicate jewels are located in each other's fixed position.
+    m_grid[lower].setPosition(m_grid[higher].xOrig(), m_grid[higher].yOrig());
+    m_grid[higher].setPosition(m_grid[lower].xOrig(), m_grid[lower].yOrig());
+}
+
+void Window::initialAnimation()
+{
+    //Play initialisation sound.
+    Mix_PlayChannel(-1, m_soundStart, 0);
+    
+    //jewel being analysed.
+    pair<int, int> current;
+    
+    //Cycle through jewels to set initial position.
+    for(int x = 0; x < GRID_SIZE; ++x)
+    {
+        for(int y = 0; y < GRID_SIZE; ++y)
+        {
+            current = make_pair(x, y);
+            
+            m_grid[current].setPosition(m_grid[current].x(), 0);
+        }
+    }
+    
+    for(int x = GRID_SIZE-1; x >= 0; --x)
+    {
+        bool dropping = true;
+        
+        do
+        {
+            for(int y = GRID_SIZE-1; y >= 0; --y)
+            {
+                current = make_pair(x, y);
+                
+                m_grid[current].setPosition(m_grid[current].x(), m_grid[current].y() + (DROP_SPEED*2));
+                
+                if(m_grid[current].y() >= m_grid[current].yOrig())
+                {
+                    dropping = false;
+                }
+            }
+            
+            //Re-render
+            drawGame();
+            
+        }while(dropping);
+    }
 }
 
 bool Window::swapAnimation(pair<int, int> jewel)
@@ -366,139 +513,7 @@ bool Window::swapAnimation(pair<int, int> jewel)
     return output;
 }
 
-void Window::indicateSwap(std::pair<int, int> lower, std::pair<int, int> higher)
-{
-    //swap jewel colors.
-    int tempColor = m_grid[lower].color();
-    m_grid[lower].setColor(m_grid[higher].color());
-    m_grid[higher].setColor(tempColor);
-    
-    //Indicate they are not being dragged any longer.
-    m_grid[lower].stopDragging();
-    m_grid[higher].stopDragging();
-    
-    //indicate jewels are located in each other's fixed position.
-    m_grid[lower].setPosition(m_grid[higher].xOrig(), m_grid[higher].yOrig());
-    m_grid[higher].setPosition(m_grid[lower].xOrig(), m_grid[lower].yOrig());
-}
-
-void Window::dropJewels(bool spawn)
-{
-    //Find jewels to be dropped.
-    vector<pair<int,int>> droppers;
-    
-    if(spawn)
-    {
-        droppers = m_grid.spawn();
-    }
-    else
-    {
-        droppers = m_grid.setDroppers();
-    }
-    
-    bool dropping;
-    
-    //if found no droppers redraw game in case jewels were combined at the top rows (i.e. no droppers)
-    if(droppers.size() == 0)
-    {
-        drawGame();
-    }
-    else
-    {
-        do
-        {
-            dropping = false;
-            
-            for(auto& jewel : droppers)
-            {
-                if(m_grid[jewel].y() < m_grid[jewel].yOrig())
-                {
-                    //Adjust coordinates for jewel to drop
-                    m_grid[jewel].setPosition(m_grid[jewel].x(), m_grid[jewel].y() + DROP_SPEED);
-                    
-                    //indicating jewels are dropping
-                    dropping = true;
-                }
-            }
-            
-            //Re-render if still dropping.
-            if(dropping)
-            {
-                drawGame();
-            }
-            
-        }while(dropping);
-    }
-}
-
-void Window::swapJewels(std::pair<int, int>& swapper, const int event)
-{
-    pair<int,int> swapped;
-    
-    //swap jewels in grid.
-    //update m_position.
-    switch(event)
-    {
-        case 1:
-            //Swap left.
-            swapped = make_pair(swapper.first, swapper.second-1);
-            break;
-        case 2:
-            //Swap right.
-            swapped = make_pair(swapper.first, swapper.second+1);
-            break;
-        case 3:
-            //Swap above.
-            swapped = make_pair(swapper.first-1, swapper.second);
-            break;
-        case 4:
-            //Swap below
-            swapped = make_pair(swapper.first+1, swapper.second);
-            break;
-    }
-    
-    performSwap(swapped, swapper);
-    
-    //Set jewel clicked on as top jewel.
-    m_top_jewel = swapper;
-    
-    //Update swapper to indicate where its jewel is on the grid.
-    swapper.first = swapped.first;
-    swapper.second = swapped.second;
-}
-
-void Window::performSwap(const std::pair<int, int> &swapper, const std::pair<int, int> &swapped)
-{
-    //swap jewels in grid, updating current position.
-    indicateSwap(swapper, swapped);
-    
-    bool render;
-    
-    //play swap sound
-    Mix_PlayChannel(-1, m_soundSwap, 0);
-    SDL_Delay(100);
-    
-    //while swap needs to be rendered.
-    do
-    {
-        drawGame();
-        
-        render = false;
-        
-        if(swapAnimation(swapper))
-        {
-            render = true;
-        }
-        
-        if(swapAnimation(swapped))
-        {
-            render = true;
-        }
-        
-    }while(render);
-}
-
-void Window::flicker()
+void Window::flickerAnimation()
 {
     //jewel being analysed.
     pair<int,int> current;
@@ -550,49 +565,54 @@ void Window::flicker()
     }
 }
 
-void Window::initialDrop()
+void Window::dropAnimation(bool spawn)
 {
-    //jewel being analysed.
-    pair<int, int> current;
+    //Find jewels to be dropped.
+    vector<pair<int,int>> droppers;
     
-    //Cycle through jewels to set initial position.
-    for(int x = 0; x < GRID_SIZE; ++x)
+    if(spawn)
     {
-        for(int y = 0; y < GRID_SIZE; ++y)
-        {
-            current = make_pair(x, y);
-            
-            m_grid[current].setPosition(m_grid[current].x(), 0);
-        }
+        droppers = m_grid.spawn();
+    }
+    else
+    {
+        droppers = m_grid.setDroppers();
     }
     
-    for(int x = GRID_SIZE-1; x >= 0; --x)
+    bool dropping;
+    
+    //if found no droppers redraw game in case jewels were combined at the top rows (i.e. no droppers)
+    if(droppers.size() == 0)
     {
-        bool dropping = true;
-        
+        drawGame();
+    }
+    else
+    {
         do
         {
-            for(int y = GRID_SIZE-1; y >= 0; --y)
+            dropping = false;
+            
+            for(auto& jewel : droppers)
             {
-                current = make_pair(x, y);
-                
-                m_grid[current].setPosition(m_grid[current].x(), m_grid[current].y() + (DROP_SPEED*2));
-                
-                if(m_grid[current].y() >= m_grid[current].yOrig())
+                if(m_grid[jewel].y() < m_grid[jewel].yOrig())
                 {
-                    dropping = false;
+                    //Adjust coordinates for jewel to drop
+                    m_grid[jewel].setPosition(m_grid[jewel].x(), m_grid[jewel].y() + DROP_SPEED);
+                    
+                    //indicating jewels are dropping
+                    dropping = true;
                 }
             }
             
-            //Re-render
-            drawGame();
+            //Re-render if still dropping.
+            if(dropping)
+            {
+                drawGame();
+            }
             
         }while(dropping);
     }
 }
-
-
-
 
 
 

@@ -17,9 +17,9 @@ Grid::Grid()
     srand(time(NULL));
 }
 
-map<pair<int, int>, Jewel>& Grid::grid()
+Jewel& Grid::operator[](const pair<int, int>& key)
 {
-    return m_grid;
+    return m_grid[key];
 }
 
 void Grid::populate()
@@ -28,14 +28,11 @@ void Grid::populate()
     int init_x = (SCREEN_WIDTH-(GRID_SIZE*JEWEL_WIDTH)-(CUSHION*(GRID_SIZE-1)))/2;
     int init_y = (SCREEN_HEIGHT-(GRID_SIZE*JEWEL_HEIGHT)-(CUSHION*(GRID_SIZE-1)))/2;
     
-    //Coordinates used to apply jewels
-    int coord_x = init_x, coord_y = init_y;
+    //Coordinates used to apply jewels and value to identify color.
+    int coord_x = init_x, coord_y = init_y, id;
     
     //Key for inserting into m_grid map.
     pair<int, int> key;
-    
-    //Value generated to identify jewel.
-    int id;
     
     for(int x = 0; x < GRID_SIZE; ++x)
     {
@@ -148,7 +145,7 @@ vector<pair<int,int>> Grid::setDroppers()
                 }
                 else
                 {
-                    //Indicate empty space at the top
+                    //Indicate jewel has already flickered.
                     m_grid[current].setColor(-1);
                 }
             }
@@ -156,19 +153,6 @@ vector<pair<int,int>> Grid::setDroppers()
     }
     
     return output;
-}
-
-void Grid::moveJewel(const pair<int,int>& moved, const pair<int,int>& space)
-{
-    //Make jewel in space = moved jewel.
-    m_grid[space] = m_grid[moved];
-    
-    //Indicate that space is now occupied.
-    m_grid[space].setVacant(false);
-    
-    //Indicate jewels are not dropping anymore.
-    m_grid[moved].setDrop(false, 0);
-    m_grid[space].setDrop(false, 0);
 }
 
 vector<pair<int,int>> Grid::spawn()
@@ -207,7 +191,7 @@ vector<pair<int,int>> Grid::spawn()
             }
             else
             {
-                //proceed to next column when found a non-vacant jewel spot
+                //proceed to next column if found a non-vacant jewel spot
                 break;
             }
         }
@@ -216,12 +200,7 @@ vector<pair<int,int>> Grid::spawn()
     return output;
 }
 
-Jewel& Grid::operator[](const pair<int, int>& key)
-{
-    return m_grid[key];
-}
-
-bool Grid::verify(int x, int y, int id)
+bool Grid::verify(int x, int y, int color)
 {
     //return flag.
     bool output = true;
@@ -235,7 +214,7 @@ bool Grid::verify(int x, int y, int id)
         adjacent1 = make_pair(x-1, y);
         adjacent2 = make_pair(x-2, y);
         
-        if(m_grid[adjacent1].color() == id && m_grid[adjacent2].color() == id)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return false;
         }
@@ -248,53 +227,13 @@ bool Grid::verify(int x, int y, int id)
         adjacent1 = make_pair(x, y-1);
         adjacent2 = make_pair(x, y-2);
         
-        if(m_grid[adjacent1].color() == id && m_grid[adjacent2].color() == id)
+        if(m_grid[adjacent1].color() == color && m_grid[adjacent2].color() == color)
         {
             return false;
         }
     }
     
     return output;
-}
-
-void Grid::combine(const pair<int,int>& key, int lower, int higher, bool x_axis)
-{
-    //Key to jewel to erase.
-    pair<int,int> adjacent;
-    
-    m_grid[key].setVacant(true);
-    
-    //Erase number of jewels indicated.
-    for(int i = 1; i < lower+1; ++i)
-    {
-        if(x_axis)
-        {
-            adjacent = make_pair(key.first, key.second-i);
-        }
-        else
-        {
-            adjacent = make_pair(key.first-i, key.second);
-        }
-        
-        //Erase jewel.
-        m_grid[adjacent].setVacant(true);
-    }
-    
-    //Erase number of jewels indicated.
-    for(int i = 1; i < higher+1; ++i)
-    {
-        if(x_axis)
-        {
-            adjacent = make_pair(key.first, key.second+i);
-        }
-        else
-        {
-            adjacent = make_pair(key.first+i, key.second);
-        }
-        
-        //Erase jewel
-        m_grid[adjacent].setVacant(true);
-    }
 }
 
 bool Grid::matchAround(const std::pair<int, int>& key)

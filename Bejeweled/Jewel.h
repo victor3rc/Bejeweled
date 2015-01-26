@@ -42,7 +42,7 @@ const int BOTTOM_ROW = SCREEN_HEIGHT-TOP_ROW-JEWEL_HEIGHT;
 class Jewel
 {
 public:
-    //Initializes internal variables
+    //Constructors. Initialise internal variables.
     Jewel(int x, int y);
     Jewel();
     
@@ -64,8 +64,8 @@ public:
     //Return bool indicating if space vacant.
     const bool& vacant() { return m_vacant; };
     
-    //Returns bool indicating if jewel is to be dropped, and how many spaces.
-    const std::pair<bool,int>& drop() { return m_drop; };
+    //Handles mouse events.
+    int handleEvent(SDL_Event* e);
     
     //Sets coordinates.
     void setPosition(int x, int y);
@@ -79,14 +79,8 @@ public:
     //Sets jewel to indicate if its space has been left blank.
     void setVacant(bool vacant);
     
-    //Indicates if jewel is being dropped or not.
-    void setDrop(bool drop, int spaces);
-    
     //Indicates swapping has been finalised.
     void stopDragging();
-    
-    //Handles mouse event
-    int handleEvent(SDL_Event* e);
     
 private:
     //Updates mouse click location.
@@ -105,15 +99,12 @@ private:
     SDL_Point m_position, m_target;
     
     //Jewel identifier value. Indicates jewel color
-    //1 - Black, 2 - Gray, 3 - pink, 4 - Blue, 5 - orange, 0 - no jewel
+    //1 - Black, 2 - Gray, 3 - pink, 4 - Blue, 5 - orange
     int m_color;
     
     //'m_drag' bool to indicated whether jewel is being clicked on.
     //'m_vacant' indicates if jewel space has been left vacant
     bool m_drag, m_vacant;
-    
-    //bool to indicate if jewel is to be dropped and integer indicating how many spaces it has to drop.
-    std::pair<bool, int> m_drop;
     
     //Coordinates where mouse was clicked.
     int m_x_click, m_y_click;

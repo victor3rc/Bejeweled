@@ -21,45 +21,8 @@ Jewel::Jewel(int x, int y)
     //Not being dragged at creation.
     m_drag = false;
     
-    //Not to be dropped at creation.
-    m_drop.first = false;
-    m_drop.second = 0;
-    
     //Not vacant at creation.
     m_vacant = false;
-}
-
-void Jewel::setPosition(int x, int y)
-{
-    m_position.x = x;
-    m_position.y = y;
-}
-
-void Jewel::setDropTarget(int x, int y)
-{
-    m_target.x = x;
-    m_target.y = y;
-}
-
-void Jewel::setColor(int color)
-{
-    m_color = color;
-}
-
-void Jewel::setVacant(bool vacant)
-{
-    m_vacant = vacant;
-}
-
-void Jewel::setDrop(bool drop, int spaces)
-{
-    m_drop.first = drop;
-    m_drop.second = spaces;
-}
-
-void Jewel::stopDragging()
-{
-    m_drag = false;
 }
 
 int Jewel::handleEvent( SDL_Event* e )
@@ -134,6 +97,33 @@ int Jewel::handleEvent( SDL_Event* e )
     }
     
     return 0;
+}
+
+void Jewel::setPosition(int x, int y)
+{
+    m_position.x = x;
+    m_position.y = y;
+}
+
+void Jewel::setDropTarget(int x, int y)
+{
+    m_target.x = x;
+    m_target.y = y;
+}
+
+void Jewel::setColor(int color)
+{
+    m_color = color;
+}
+
+void Jewel::setVacant(bool vacant)
+{
+    m_vacant = vacant;
+}
+
+void Jewel::stopDragging()
+{
+    m_drag = false;
 }
 
 void Jewel::setClickLocation(int x, int y)

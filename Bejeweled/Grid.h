@@ -19,13 +19,17 @@
 class Grid
 {
 public:
+    //Constructor
     Grid();
+    
+    //Returns grid.
+    std::map<std::pair<int, int>, Jewel>& grid() { return m_grid; };
+    
+    //Provide intuitive mothod of accessing jewels in grid.
+    Jewel& operator[](const std::pair<int, int>& key);
     
     //Populates grid with random jewels.
     void populate();
-    
-    //Returns grid.
-    std::map<std::pair<int, int>, Jewel>& grid();
     
     //Check if jewels in grid give a combination.
     //returns bool indicating if any combinations were found.
@@ -35,35 +39,18 @@ public:
     //returns vector with all keys to jewels to be dropped.
     std::vector<std::pair<int,int>> setDroppers();
     
-    //Move jewel to a new position in grid.
-    //'moved' is key to jewel to be moved.
-    //'space' is key to space to be moved into.
-    void moveJewel(const std::pair<int,int>& moved, const std::pair<int,int>& space);
-    
     //Replace jewels combined with new jewels.
+    //Returns keys of jewels being spawned
     std::vector<std::pair<int,int>> spawn();
-    
-    //Returns grid size.
-    const int size() { return GRID_SIZE; };
-    
-    //Provide intuitive mothod of accessing jewels in grid.
-    Jewel& operator[](const std::pair<int, int>& key);
     
 private:
     //Verifies jewel can be created in grid position given.
     //'x' location on x-axis
     //'y' location on y-axis.
-    //'id' indicates jewel type.
-    bool verify(int x, int y, int index);
+    //'color' indicates jewel color.
+    bool verify(int x, int y, int color);
     
-    //Combines jewels in lower and higher indexes to the one given.
-    //'key' is key of jewel to be combined in grid.
-    //'lower' is the number of jewels lower in the relevant index that are to be combined.
-    //'higher' is the number of jewels higher in the relevant index that are to be combined.
-    //'x_axis' indicates if jewels to combine are in x-axis (true) or y-axis (false).
-    void combine(const std::pair<int,int>& key, int lower, int higher, bool x_axis);
-    
-    //Checks jewels around jewel given, to see if there is a combination.
+    //Checks jewels around jewel indicated, to see if there is a combination.
     //'key' is jewel indicating jewel to check for.
     bool matchAround(const std::pair<int,int>& key);
     
