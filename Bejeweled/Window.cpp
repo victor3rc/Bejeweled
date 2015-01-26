@@ -71,8 +71,8 @@ void Window::start()
     //Populate grid
     m_grid.populate();
     
-    //Draw background and jewels.
-    drawGame();
+    //Initialise background and jewels on screen.
+    initialDrop();
     
     //Key to consult jewels.
     pair<int, int> swapper;
@@ -547,6 +547,47 @@ void Window::flicker()
         {
             m_grid[jewel].setVacant(true);
         }
+    }
+}
+
+void Window::initialDrop()
+{
+    //jewel being analysed.
+    pair<int, int> current;
+    
+    //Cycle through jewels to set initial position.
+    for(int x = 0; x < GRID_SIZE; ++x)
+    {
+        for(int y = 0; y < GRID_SIZE; ++y)
+        {
+            current = make_pair(x, y);
+            
+            m_grid[current].setPosition(m_grid[current].x(), 0);
+        }
+    }
+    
+    for(int x = GRID_SIZE-1; x >= 0; --x)
+    {
+        bool dropping = true;
+        
+        do
+        {
+            for(int y = GRID_SIZE-1; y >= 0; --y)
+            {
+                current = make_pair(x, y);
+                
+                m_grid[current].setPosition(m_grid[current].x(), m_grid[current].y() + (DROP_SPEED*2));
+                
+                if(m_grid[current].y() >= m_grid[current].yOrig())
+                {
+                    dropping = false;
+                }
+            }
+            
+            //Re-render
+            drawGame();
+            
+        }while(dropping);
     }
 }
 

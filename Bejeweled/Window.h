@@ -73,6 +73,9 @@ private:
     //Flicker jewels which have been combined before substituting them.
     void flicker();
     
+    //Initialise jewels on screen.
+    void initialDrop();
+    
     //The window.
     SDL_Window* m_window;
     
